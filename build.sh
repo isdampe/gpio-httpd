@@ -1,2 +1,4 @@
 #!/bin/bash
-gcc *.c -o httpd -lpthread
+mkdir -p bin
+rm bin/httpd
+gcc src/*.c -o bin/gpio-httpd -lpthread

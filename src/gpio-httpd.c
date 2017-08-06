@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "tinyhttp.h"
+#include "server.h"
 
 void httpd_usage()
 {
@@ -9,10 +9,10 @@ void httpd_usage()
 
 int main(int argc, char *argv[])
 {
-  char* tinyhttp_document_root = "/var/www";
+  char* httpd_document_root = "/var/www";
 
   httpd server;
-  server.document_root = tinyhttp_document_root;
+  server.document_root = httpd_document_root;
 
   if (argc < 2) {
     httpd_usage();
@@ -20,13 +20,13 @@ int main(int argc, char *argv[])
   }
 
   server.port = atoi(argv[1]);
-  server.document_root = (argc >= 3) ? argv[2] : tinyhttp_document_root;
+  server.document_root = (argc >= 3) ? argv[2] : httpd_document_root;
 
   printf("Going to listen on port %i\n", server.port);
   printf("Server directory %s\n", server.document_root);
 
-  tinyhttp_setup(&server);
-  tinyhttp_serve(&server);
+  httpd_setup(&server);
+  httpd_serve(&server);
 
   return 0; 
 }

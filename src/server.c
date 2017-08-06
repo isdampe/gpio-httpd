@@ -5,23 +5,24 @@
 #include <sys/types.h> 
 #include <sys/socket.h>
 #include <netinet/in.h>
-//#include <fcntl.h>
 #include <pthread.h>
-#include "tinyarray.h"
-#include "tinyhttp.h"
 #include <stdlib.h>
 
-void tinyhttp_error(const char *msg)
+#include "array.h"
+#include "http-parser.h"
+#include "server.h"
+
+void httpd_error(const char *msg)
 {
   perror(msg);
   exit(1);
 }
 
-void tinyhttp_setup(httpd *server) {
+void httpd_setup(httpd *server) {
 
   server->sockfd = socket(AF_INET, SOCK_STREAM, 0);
   if (server->sockfd < 0) 
-    tinyhttp_error("ERROR opening socket");
+    httpd_error("ERROR opening socket");
 
   //Zero the server address memory
   bzero((char *) &server->serv_addr, sizeof(server->serv_addr));
@@ -37,7 +38,7 @@ void tinyhttp_setup(httpd *server) {
 
   if (bind(server->sockfd, (struct sockaddr *) &server->serv_addr,
         sizeof(server->serv_addr)) < 0) 
-    tinyhttp_error("ERROR on binding");
+    httpd_error("ERROR on binding");
 
   listen(server->sockfd, 20);
 
@@ -45,7 +46,7 @@ void tinyhttp_setup(httpd *server) {
 
 }
 
-int tinyhttp_serve(httpd *server) {
+int httpd_serve(httpd *server) {
   socklen_t clilen;
   struct sockaddr_in cli_addr;
   int newsockfd;
@@ -60,9 +61,9 @@ int tinyhttp_serve(httpd *server) {
     if (newsockfd < 0) continue;
 
     //Debug only.
-    //tinyhttp_request(newsockfd);
+    //httpd_request(newsockfd);
 
-    int thread_result = pthread_create(&thread_id, NULL, tinyhttp_request, (int *)newsockfd);
+    int thread_result = pthread_create(&thread_id, NULL, httpd_request, (int *)newsockfd);
     if (0 != thread_result) {
       fprintf(stderr, "Error creating pthread");
       continue;
@@ -77,7 +78,7 @@ int tinyhttp_serve(httpd *server) {
 
 }
 
-void *tinyhttp_request(int *sockfd) {
+void *httpd_request(int *sockfd) {
   char buffer[256];
   request req;
   int n;
@@ -91,7 +92,7 @@ void *tinyhttp_request(int *sockfd) {
     pthread_exit((void *)NULL);
 
   //Fix this: Keep reading until buffer complete
-  req = tinyhttp_parse_request(buffer);
+  req = httpd_parse_request(buffer);
   //printf("Request type: %i\n", req.method);
 
   switch ( req.method ) {
@@ -104,7 +105,7 @@ void *tinyhttp_request(int *sockfd) {
     case THTTP_METHOD_UNKNOWN:
     default:
       //printf("Unknown:\n");
-      tinyhttp_invalid_request(&sockfd);
+      httpd_invalid_request(&sockfd);
       break;
   }
     
@@ -117,69 +118,7 @@ void *tinyhttp_request(int *sockfd) {
 
 }
 
-request tinyhttp_parse_request(char *buffer) {
-  request req;
-  char httpd_method[5];
-  array *lines;
-
-  //Defaults.
-  req.method = THTTP_METHOD_UNKNOWN;
-
-  //Split the buffer into an array of lines.
-  lines = tinyhttp_str_split("\n", buffer);
-
-  //Parse the first line, check for HTTP method,
-  //request uri, and http version
-  
-  //Loop through all remaining lines, searching for two \n in a row
-  //to indicte the end of the request
-
-  //printf("The size is: %zu\n", lines->size);
-  //for ( int i=1; i<(lines->size); i++ ) {
-    //printf("CHAR: %s\n", lines->array[i]);
-  //}
-
-  //Method type.
-  strncpy(httpd_method, buffer, 4);
-  if ( strcmp(httpd_method, "GET ") == 0 ) {
-    req.method = THTTP_METHOD_GET;
-  } else if ( strcmp(httpd_method, "POST") == 0 ) {
-    req.method = THTTP_METHOD_POST;
-  }
-
-  array_free(lines);
-
-  return req;
-
-}
-
-/**
- * Splits a string by any delimiter as given in delim
- * into an array of strings
- */
-array* tinyhttp_str_split(char *delim, char *buffer)
-{
-  array *result = malloc(sizeof(array));
-  char * pch;
-
-  array_init(result);
-
-  pch = strtok (buffer,delim);
-  while (pch != NULL)
-  {
-    
-    char *entry = malloc(strlen(pch));
-    strncpy(entry, pch, strlen(pch));
-    array_append(result, entry);
-    //printf ("%s\n",pch);
-    pch = strtok (NULL, delim);
-  } 
-
-  return result;
-
-}
-
-void tinyhttp_invalid_request(int *sockfd) {
+void httpd_invalid_request(int *sockfd) {
 
   char *http_headers =
     "HTTP/1.1 400 Bad Request\r\n" \
@@ -191,7 +130,7 @@ void tinyhttp_invalid_request(int *sockfd) {
 
 }
 
-void tinyhttp_404(int *sockfd) {
+void httpd_404(int *sockfd) {
 
   char *http_headers =
     "HTTP/1.1 404 Not Found\r\n" \
@@ -203,10 +142,10 @@ void tinyhttp_404(int *sockfd) {
 
 }
 
-void tinyhttp_route_get(int *sockfd) {
+void httpd_route_get(int *sockfd) {
 
 }
 
-void tinyhttp_route_post(int *sockfd) {
+void httpd_route_post(int *sockfd) {
 
 }

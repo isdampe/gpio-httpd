@@ -45,13 +45,18 @@ array* httpd_str_split(char *delim, char *buffer)
   copied_buffer = malloc(1 + strlen(buffer));
   strncpy(copied_buffer, buffer, strlen(buffer));
 
+  //Store results in array.
   array_init(result);
+
   pch = strtok (copied_buffer,delim);
   while (pch != NULL)
   {
     char *entry = malloc(strlen(pch));
     strncpy(entry, pch, strlen(pch));
+
+    //Append the line in the array.
     array_append(result, entry);
+
     //printf ("%s\n",pch);
     pch = strtok (NULL, delim);
   } 

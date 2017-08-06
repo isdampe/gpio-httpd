@@ -9,26 +9,33 @@ request httpd_parse_request(char *buffer) {
   request req;
   char httpd_method[5];
   array *lines;
+  unsigned int i;
 
   //Defaults.
-  req.method = THTTP_METHOD_UNKNOWN;
+  req.method = HTTPD_MTHD_UNKNOWN;
 
   //Split the buffer into an array of lines.
   lines = httpd_str_split("\n", buffer);
 
   printf("The number of lines is: %zu\n", lines->size);
-  for ( int i=1; i<(lines->size); i++ ) {
+  for ( i=1; i<(lines->size); i++ ) {
     printf("CHAR: %s\n", (char *)lines->array[i]);
   }
 
   //Detect request type.
-  
-  //
+  httpd_parse_request_head(&req, (char *)lines->array[1]);
+
+  switch ( req.method ) {
+    case HTTPD_MTHD_GET:
+      puts("TYPE: GET");
+      break;
+  }
+
+  printf("Request URI: %s\n", req.uri);
 
   array_free(lines);
 
   return req;
-
 }
 
 /**
@@ -51,7 +58,10 @@ array* httpd_str_split(char *delim, char *buffer)
   pch = strtok (copied_buffer,delim);
   while (pch != NULL)
   {
-    char *entry = malloc(strlen(pch));
+    //Prepare the array entry
+    char *entry = malloc(1 + strlen(pch));
+    bzero(entry, 1 + strlen(pch));
+
     strncpy(entry, pch, strlen(pch));
 
     //Append the line in the array.
@@ -65,4 +75,46 @@ array* httpd_str_split(char *delim, char *buffer)
 
   return result;
 
+}
+
+void httpd_parse_request_head(request *req, char *line)
+{
+  array *args;
+  char *uri;
+  unsigned int i;
+
+  //Split the line by spaces.
+  args = httpd_str_split(" ", line);
+
+  //Must have 4 arguments, "{method} {uri} {version}"
+  if ( args->size < 4 ) 
+  {
+    req->error = 1;
+    return;
+  }
+
+  //Method type
+  //printf("Method: %s\n", (char *)args->array[1]);
+  if ( strcmp((char *)args->array[1], "GET") == 0 )
+  {
+    req->method = HTTPD_MTHD_GET;
+  }
+
+  //URI
+  uri = malloc(1 + strlen(args->array[2]));
+  bzero(uri, 1 + strlen(args->array[2]));
+  strncpy(uri, args->array[2], strlen(args->array[2]));
+  req->uri = uri;
+
+  //HTTP version.
+  //printf("Version: %s\n", (char *)args->array[3]);
+  if ( strcmp((char *)args->array[3], "HTTP/1.0") != 0 &&
+       strcmp((char *)args->array[3], "HTTP/1.0") != 0 )
+  {
+    //puts("Unsupported HTTP version");
+    req->error = 1;
+    return;
+  }
+
+  array_free(args);
 }

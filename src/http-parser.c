@@ -17,21 +17,13 @@ request httpd_parse_request(char *buffer) {
   //Split the buffer into an array of lines.
   lines = httpd_str_split("\n", buffer);
 
-  printf("The number of lines is: %zu\n", lines->size);
+  //printf("The number of lines is: %zu\n", lines->size);
   for ( i=1; i<(lines->size); i++ ) {
-    printf("CHAR: %s\n", (char *)lines->array[i]);
+    //printf("CHAR: %s\n", (char *)lines->array[i]);
   }
 
   //Detect request type.
   httpd_parse_request_head(&req, (char *)lines->array[1]);
-
-  switch ( req.method ) {
-    case HTTPD_MTHD_GET:
-      puts("TYPE: GET");
-      break;
-  }
-
-  printf("Request URI: %s\n", req.uri);
 
   array_free(lines);
 
@@ -46,10 +38,14 @@ array* httpd_str_split(char *delim, char *buffer)
 {
   char *copied_buffer;
   array *result = malloc(sizeof(array));
+  bzero(result, sizeof(array));
+
   char * pch;
 
   //Make a copy of the buffer to modify.
   copied_buffer = malloc(1 + strlen(buffer));
+  bzero(copied_buffer, 1 + strlen(buffer));
+
   strncpy(copied_buffer, buffer, strlen(buffer));
 
   //Store results in array.
@@ -62,7 +58,7 @@ array* httpd_str_split(char *delim, char *buffer)
     char *entry = malloc(1 + strlen(pch));
     bzero(entry, 1 + strlen(pch));
 
-    strncpy(entry, pch, strlen(pch));
+    strncpy(entry, (char *)pch, 1 + strlen(pch));
 
     //Append the line in the array.
     array_append(result, entry);
@@ -80,6 +76,7 @@ array* httpd_str_split(char *delim, char *buffer)
 void httpd_parse_request_head(request *req, char *line)
 {
   array *args;
+  array *uri_args;
   char *uri;
   unsigned int i;
 
@@ -94,24 +91,42 @@ void httpd_parse_request_head(request *req, char *line)
   }
 
   //Method type
-  //printf("Method: %s\n", (char *)args->array[1]);
   if ( strcmp((char *)args->array[1], "GET") == 0 )
   {
     req->method = HTTPD_MTHD_GET;
   }
+  else if ( strcmp((char *)args->array[1], "POST") == 0 )
+  {
+    req->method = HTTPD_MTHD_POST;
+  } 
 
   //URI
-  uri = malloc(1 + strlen(args->array[2]));
-  bzero(uri, 1 + strlen(args->array[2]));
-  strncpy(uri, args->array[2], strlen(args->array[2]));
+  uri = malloc(1 + strlen((const char *)args->array[2]));
+  bzero(uri, 1 + strlen((const char *)args->array[2]));
+  strncpy(uri, (char *)args->array[2], strlen((const char *)args->array[2]));
   req->uri = uri;
 
-  //HTTP version.
-  //printf("Version: %s\n", (char *)args->array[3]);
-  if ( strcmp((char *)args->array[3], "HTTP/1.0") != 0 &&
-       strcmp((char *)args->array[3], "HTTP/1.0") != 0 )
+  //Determine if GET is special case (i.e. /gpio/*)
+  if ( req->method == HTTPD_MTHD_GET )
   {
-    //puts("Unsupported HTTP version");
+    uri_args = httpd_str_split("/", uri);
+    if ( uri_args->size >= 3 )
+    {
+      if ( strcmp((char *)uri_args->array[1], "gpio") == 0 )
+      {
+        req->method = HTTPD_MTHD_GET_GPIO;
+      }
+    }
+    free(uri_args);
+  }
+
+  //HTTP version.
+  printf("Version: '%s'\n", (char *)args->array[3]);
+  if ( strcmp((char *)args->array[3], "HTTP/1.0") != 0 &&
+       strcmp((char *)args->array[3], "HTTP/1.1") != 0 )
+  {
+    puts("Unsupported HTTP version");
+    //Unsupported HTTP version.
     req->error = 1;
     return;
   }

@@ -1,6 +1,7 @@
 #define HTTPD_MTHD_UNKNOWN                    0
 #define HTTPD_MTHD_GET                        1
 #define HTTPD_MTHD_POST                       2
+#define HTTPD_MTHD_GET_GPIO                   3
 
 typedef struct request {
   unsigned char method;

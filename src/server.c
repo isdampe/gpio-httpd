@@ -96,13 +96,16 @@ void *httpd_request(int *sockfd) {
   //printf("Request type: %i\n", req.method);
 
   switch ( req.method ) {
-    case THTTP_METHOD_GET:
+    case HTTPD_MTHD_GET:
       //printf("GET:\n");
       break;
-    case THTTP_METHOD_POST:
+    case HTTPD_MTHD_POST:
       //printf("POST:\n");
       break;
-    case THTTP_METHOD_UNKNOWN:
+    case HTTPD_MTHD_GET_GPIO:
+      //printf("GETTT GPIO:\n");
+      break;
+    case HTTPD_MTHD_UNKNOWN:
     default:
       //printf("Unknown:\n");
       httpd_invalid_request(&sockfd);

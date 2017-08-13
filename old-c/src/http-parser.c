@@ -36,17 +36,14 @@ request httpd_parse_request(char *buffer) {
  */
 array* httpd_str_split(char *delim, char *buffer)
 {
-  char *copied_buffer;
+  char *copied_buffer = malloc( strlen(buffer) * sizeof(char) + 1);
   array *result = malloc(sizeof(array));
   bzero(result, sizeof(array));
 
   char * pch;
 
-  //Make a copy of the buffer to modify.
-  copied_buffer = malloc(1 + strlen(buffer));
-  bzero(copied_buffer, 1 + strlen(buffer));
-
-  strncpy(copied_buffer, buffer, strlen(buffer));
+  bzero(copied_buffer, strlen(buffer) * sizeof(char) +1);
+  memcpy(copied_buffer, buffer, strlen(buffer) * sizeof(char));
 
   //Store results in array.
   array_init(result);
@@ -55,16 +52,18 @@ array* httpd_str_split(char *delim, char *buffer)
   while (pch != NULL)
   {
     //Prepare the array entry
-    char *entry = malloc(1 + strlen(pch));
-    bzero(entry, 1 + strlen(pch));
+    char *entry = malloc( strlen(pch) * sizeof(char) + 1);
+    bzero(entry, strlen(pch) * sizeof(char) + 1);
 
-    strncpy(entry, (char *)pch, 1 + strlen(pch));
+    strncpy(entry, (char *)pch, strlen(pch));
 
     //Append the line in the array.
     array_append(result, entry);
 
-    //printf ("%s\n",pch);
+    printf ("%s\n",pch);
     pch = strtok (NULL, delim);
+    free(entry);
+
   } 
 
   free(copied_buffer);
@@ -82,6 +81,7 @@ void httpd_parse_request_head(request *req, char *line)
 
   //Split the line by spaces.
   args = httpd_str_split(" ", line);
+  printf("Size: %i\n", args->size);
 
   //Must have 4 arguments, "{method} {uri} {version}"
   if ( args->size < 4 ) 
@@ -107,6 +107,7 @@ void httpd_parse_request_head(request *req, char *line)
   req->uri = uri;
 
   //Determine if GET is special case (i.e. /gpio/*)
+  printf("METHOD: %s\n", req->method);
   if ( req->method == HTTPD_MTHD_GET )
   {
     uri_args = httpd_str_split("/", uri);
@@ -121,6 +122,7 @@ void httpd_parse_request_head(request *req, char *line)
   }
 
   //HTTP version.
+  printf("URI: %s\n", (char *)args->array[2]);
   printf("Version: '%s'\n", (char *)args->array[3]);
   if ( strcmp((char *)args->array[3], "HTTP/1.0") != 0 &&
        strcmp((char *)args->array[3], "HTTP/1.1") != 0 )

@@ -5,6 +5,7 @@ using namespace std;
 
 enum request_type
 {
+  HTTP_UNKNOWN,
   HTTP_GET,
   HTTP_POST
 };

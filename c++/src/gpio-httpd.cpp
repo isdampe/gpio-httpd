@@ -1,4 +1,5 @@
 #include <iostream>
+#include <stdio.h>
 #include <string>
 #include "http-parser.h"
 
@@ -12,6 +13,7 @@ int main(int argc, char *argv[])
                         "User-agent: Testing!\n\n"; 
 
   request test = http_parse_request(test_request);
+  printf("%i\n", (int)test.type);
 
   return 0;
 }

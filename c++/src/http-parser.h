@@ -1,28 +1,13 @@
+#include <map>
 #include <string>
 #include <vector>
 
+#include "http-types.h"
+
 using namespace std;
 
-enum request_type
-{
-  HTTP_UNKNOWN,
-  HTTP_GET,
-  HTTP_POST
-};
+http_request http_parse_request(const string &raw_request);
+void http_process_head(http_request &r, const string &line);
+void http_process_header_fields(http_request &r, const vector<string> &lines);
 
-enum request_error
-{
-  EMPTY_REQUEST,
-  BAD_REQUEST
-};
-
-struct request
-{
-  request_type type;
-  request_error error;
-  string uri;
-  string http_version;
-};
-
-request http_parse_request(const string &raw_request);
-request_type http_parse_request_type(const vector<string> &lines);
+request_type http_parse_request_type(const vector<string> &args);

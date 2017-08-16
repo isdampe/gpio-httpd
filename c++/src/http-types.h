@@ -35,6 +35,7 @@ struct http_response
 {
   unsigned short status;
   string status_msg;
+  string date_time;
   float http_version;
   map<string,string> header_fields;
   string data;

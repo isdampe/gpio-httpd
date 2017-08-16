@@ -37,3 +37,4 @@ struct http_client
 http_srv server_create(const unsigned short port, const int max_queue);
 void server_loop(http_srv &server);
 void server_handle_request(const int client_fd);
+void server_reply(const http_client &client, const http_response &response);

@@ -16,8 +16,11 @@
 #include "http-parser.h"
 #include "http-response.h"
 #include "server.h"
+#include "string_ops.h"
 
 #define TCP_BUFFER_SIZE 1024
+#define SERVER_NAME "gpiohttpd"
+#define SERVER_VERSION "0.1.0"
 
 //2MB.
 #define HTTP_MAX_REQUEST_SIZE 2097152
@@ -147,6 +150,7 @@ void server_handle_request(const int client_fd)
   {
     //Handle error respone.
     http_res = http_create_error_response(http_req);
+    server_reply(client, http_res);
   }
 
   printf("Type: %i\n", (int)http_req.type);
@@ -173,3 +177,27 @@ void server_handle_request(const int client_fd)
 
 }
 
+void server_reply(const http_client &client, const http_response &response)
+{
+  string str_res;
+  int n;
+
+  //Head.
+  str_res = "HTTP/1.1 " + to_string(response.status) + " " + \
+             response.status_msg + "\r\n";
+
+  //Date.
+  str_res += "Date: " + response.date_time + "\r\n";
+  
+  //Server.
+  str_res += "Server: gpiohttpd/0.1.0\r\n";
+  
+  //Send it.
+  write(client.client_fd, str_res.c_str(), strlen(str_res.c_str()));
+  if (n < 0)
+    printf("ERROR writing to socket\n");
+
+  //If not keep open
+  close(client.client_fd);
+
+}

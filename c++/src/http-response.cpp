@@ -1,5 +1,6 @@
 #include <string>
 #include "http-response.h"
+#include "string_ops.h"
 
 using namespace std;
 
@@ -15,6 +16,7 @@ http_response http_create_error_response(const http_request &req)
   http_response res = {}; //Ensure the response is empty
   res.http_version = req.http_version; 
   res.data = "";
+  res.date_time = string_get_datetime();
   
   switch( req.error )
   {

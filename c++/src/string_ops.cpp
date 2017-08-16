@@ -4,6 +4,8 @@
 #include <vector>
 #include <iostream>
 #include <stdio.h>
+#include <iomanip>
+#include <ctime>
 
 using namespace std;
 
@@ -51,3 +53,16 @@ string string_trim(const string &str, const string &whitespace = " \t")
 
     return str.substr(strBegin, strRange);
 }
+
+string string_get_datetime()
+{
+  stringstream ss;
+
+  const time_t t = time(nullptr);
+  struct tm *timeinfo;
+  timeinfo = localtime(&t);
+  ss << put_time(timeinfo, "%a, %d %b %Y %H:%M:%S %Z");
+
+  return ss.str();
+}
+

@@ -19,11 +19,13 @@
 #include "string_ops.h"
 
 #define TCP_BUFFER_SIZE 1024
-#define SERVER_NAME "gpiohttpd"
-#define SERVER_VERSION "0.1.0"
 
 //2MB.
 #define HTTP_MAX_REQUEST_SIZE 2097152
+
+const std::string SERVER_NAME = "gpiohttpd";
+const std::string SERVER_VERSION = "0.1.0";
+const std::string SERVER_SIGNATURE = SERVER_NAME + "/" + SERVER_VERSION;
 
 http_srv server_create(const unsigned short port, const int max_queue)
 {
@@ -52,7 +54,7 @@ http_srv server_create(const unsigned short port, const int max_queue)
   server.addr.sin_port = htons(port);
 
   //Bind to socket.
-  if (bind(server.sock_fd, (struct sockaddr *) &server.addr, 
+  if (::bind(server.sock_fd, (struct sockaddr *) &server.addr, 
 	   sizeof(server.addr)) < 0) 
   {
     printf("Error when binding\n");
@@ -150,29 +152,36 @@ void server_handle_request(const int client_fd)
   {
     //Handle error respone.
     http_res = http_create_error_response(http_req);
-    server_reply(client, http_res);
+  }
+  else {
+  
+    //Route the request.
+    switch(http_req.type)
+    {
+      case request_type::HTTP_GET:
+        http_res = http_create_get_response(http_req);
+        break;
+      case request_type::HTTP_POST:
+        http_res = http_create_post_response(http_req);
+        break;
+      default:
+        http_res = http_create_error_response(http_req);
+        break;
+    }
+  
   }
 
+  /*
   printf("Type: %i\n", (int)http_req.type);
   printf("URI: %s\n", http_req.uri.c_str());
   printf("HTTP Version: %f\n", http_req.http_version);
   printf("User agent: %s\n", http_req.header_fields["user-agent"].c_str());
   printf("Host: %s\n", http_req.header_fields["host"].c_str());
-
-  http_res = http_create_response(http_req);
-
-
-  /*
-  response = "HTTP/1.1 500 Internal Server Error\nDate: 14 Aug 2018\r\n\r\n";
-  //Write to socket.
-  
-  client.n = write(client.client_fd, response.c_str(), strlen(response.c_str()));
-  if (client.n < 0) 
-    printf("ERROR writing to socket\n");
-  
-  //printf("String %s\n", buffer.c_str());
   */
 
+  server_reply(client, http_res);
+
+  //Should I close, i.e. keep open?
   close(client.client_fd);
 
 }
@@ -190,7 +199,7 @@ void server_reply(const http_client &client, const http_response &response)
   str_res += "Date: " + response.date_time + "\r\n";
   
   //Server.
-  str_res += "Server: gpiohttpd/0.1.0\r\n";
+  str_res += "Server: " + SERVER_SIGNATURE + "\r\n";
   
   //Send it.
   write(client.client_fd, str_res.c_str(), strlen(str_res.c_str()));
@@ -198,6 +207,6 @@ void server_reply(const http_client &client, const http_response &response)
     printf("ERROR writing to socket\n");
 
   //If not keep open
-  close(client.client_fd);
+  //close(client.client_fd);
 
 }

@@ -4,12 +4,42 @@
 
 using namespace std;
 
-http_response http_create_response(const http_request &req)
+http_response http_create_get_response(const http_request &req)
 {
-  http_response res; 
+  string gpios;
+  http_response res = {};
+  res.http_version = req.http_version;
+
+  //Is it a special request?
+  gpios = req.uri.substr(0,5);
+  if ( gpios == "/gpio" )
+  {
+    printf("SPECIAL GPIO\n\n");
+  }
+
+  res.data = "";
+  res.date_time = string_get_datetime();
+
+  res.status = 200;
+  res.status_msg = "OK";
 
   return res;
 }
+
+http_response http_create_post_response(const http_request &req)
+{
+  http_response res = {};
+  res.http_version = req.http_version;
+  res.data = "";
+  res.date_time = string_get_datetime();
+
+  res.status = 200;
+  res.status_msg = "OK";
+
+  return res;
+}
+
+
 
 http_response http_create_error_response(const http_request &req)
 {

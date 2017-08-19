@@ -14,7 +14,6 @@ vector<string> string_split_to_vector(const string &s, char delim) {
   string item;
   vector<string> tokens;
 
-
   while (getline(ss, item, delim))
   {
     if(! item.empty() && *item.rbegin() == '\r') {
@@ -44,14 +43,14 @@ string string_to_upper(const string &s)
 
 string string_trim(const string &str, const string &whitespace = " \t")
 {
-    const size_t strBegin = str.find_first_not_of(whitespace);
-    if (strBegin == string::npos)
+    const size_t str_begin = str.find_first_not_of(whitespace);
+    if (str_begin == string::npos)
         return ""; // no content
 
-    const size_t strEnd = str.find_last_not_of(whitespace);
-    const size_t strRange = strEnd - strBegin + 1;
+    const size_t str_end = str.find_last_not_of(whitespace);
+    const size_t str_range = str_end - str_begin + 1;
 
-    return str.substr(strBegin, strRange);
+    return str.substr(str_begin, str_range);
 }
 
 string string_get_datetime()

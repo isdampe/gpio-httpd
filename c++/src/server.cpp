@@ -112,9 +112,9 @@ void server_handle_request(const int client_fd)
   while (1)
   {
     client.n = read(client.client_fd, buf, TCP_BUFFER_SIZE);
-    if (client.n < 0) 
+    if (client.n <= 0) 
     {
-      printf("ERROR reading from socket\n");
+      //printf("ERROR reading from socket\n");
       client.error = CLIENT_UNKNOWN_ERROR;
       break;
     }

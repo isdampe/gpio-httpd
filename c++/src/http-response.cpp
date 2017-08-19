@@ -1,7 +1,6 @@
 #include <string>
 #include "http-response.h"
 #include "string_ops.h"
-#include <wiringPi.h>
 
 using namespace std;
 

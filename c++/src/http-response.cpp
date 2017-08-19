@@ -1,6 +1,7 @@
 #include <string>
 #include "http-response.h"
 #include "string_ops.h"
+#include <wiringPi.h>
 
 using namespace std;
 
@@ -15,9 +16,14 @@ http_response http_create_get_response(const http_request &req)
   if ( gpios == "/gpio" )
   {
     printf("SPECIAL GPIO\n\n");
+    res.data = "";
+  }
+  else 
+  {
+    //Static files.
+    res.data = "";
   }
 
-  res.data = "";
   res.date_time = string_get_datetime();
 
   res.status = 200;

@@ -200,6 +200,15 @@ void server_reply(const http_client &client, const http_response &response)
   
   //Server.
   str_res += "Server: " + SERVER_SIGNATURE + "\r\n";
+
+  //Various other headers.
+
+  //Data.
+  if ( response.data_length > 0 )
+  {
+    str_res += "Content-Length: " + to_string(response.data_length) + "\r\n\r\n";
+    str_res += response.data + "\r\n";
+  }
   
   //Send it.
   write(client.client_fd, str_res.c_str(), strlen(str_res.c_str()));

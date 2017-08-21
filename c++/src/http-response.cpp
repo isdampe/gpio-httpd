@@ -1,4 +1,5 @@
 #include <string>
+#include "http-gpio.h"
 #include "http-response.h"
 #include "string_ops.h"
 
@@ -9,24 +10,23 @@ http_response http_create_get_response(const http_request &req)
   string gpios;
   http_response res = {};
   res.http_version = req.http_version;
+  res.date_time = string_get_datetime();
 
   //Is it a special request?
   gpios = req.uri.substr(0,5);
   if ( gpios == "/gpio" )
   {
-    printf("SPECIAL GPIO\n\n");
-    res.data = "";
+    http_build_gpio_get_response(req, res);
   }
   else 
   {
     //Static files.
     res.data = "";
+    res.status = 200;
+    res.status_msg = "OK";
   }
 
-  res.date_time = string_get_datetime();
-
-  res.status = 200;
-  res.status_msg = "OK";
+  http_response_set_data_length(res);
 
   return res;
 }
@@ -78,4 +78,12 @@ http_response http_create_error_response(const http_request &req)
   }
 
   return res;
+}
+
+void http_response_set_data_length(http_response &res)
+{
+  if ( res.data != "" )
+  {
+    res.data_length = (unsigned long)res.data.length();
+  }
 }

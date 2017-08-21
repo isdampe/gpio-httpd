@@ -33,18 +33,29 @@ http_response http_create_get_response(const http_request &req)
 
 http_response http_create_post_response(const http_request &req)
 {
+  string gpios;
   http_response res = {};
   res.http_version = req.http_version;
-  res.data = "";
   res.date_time = string_get_datetime();
+  res.data = "";
 
-  res.status = 200;
-  res.status_msg = "OK";
+  //Is it a special request?
+  gpios = req.uri.substr(0,5);
+  if ( gpios == "/gpio" )
+  {
+    http_build_gpio_post_response(req, res);
+  }
+  else 
+  {
+    res.status = 501;
+    res.status_msg = "Not Implemented";
+    res.data = "POST is only supported for /gpio requests.";
+    http_response_set_data_length(res);
+  }
 
   return res;
+
 }
-
-
 
 http_response http_create_error_response(const http_request &req)
 {

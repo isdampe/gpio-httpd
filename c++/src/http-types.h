@@ -40,6 +40,7 @@ struct http_response
   string date_time;
   float http_version;
   map<string,string> header_fields;
+  string content_type;
   unsigned long data_length;
   string data;
 };

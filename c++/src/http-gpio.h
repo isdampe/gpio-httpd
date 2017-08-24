@@ -1,4 +1,16 @@
+#include <map>
+#include <vector>
 #include "http-types.h"
+
+using std::map;
+using std::vector;
+
+/**
+ * Queries a vector of GPIO pins and returns their results in a key-value
+ * <string,string> map
+ * @param gpio_queries A vector containing a list of GPIO pins to query
+ */
+map<string,string> http_gpio_query_pins_to_map(const vector<unsigned short> &gpio_queries);
 
 /**
  * Parses a HTTP GET request, interacts with GPIO as per the request, builds

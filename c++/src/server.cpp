@@ -204,6 +204,9 @@ void server_reply(const http_client &client, const http_response &response)
 
   //Various other headers.
 
+  //Content type.
+  str_res += "Content-Type: " + response.content_type + "\r\n";
+
   //Data.
   if ( response.data_length > 0 )
   {

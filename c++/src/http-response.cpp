@@ -3,7 +3,7 @@
 #include "http-response.h"
 #include "string_ops.h"
 
-using namespace std;
+using std::string;
 
 http_response http_create_get_response(const http_request &req)
 {
@@ -18,7 +18,7 @@ http_response http_create_get_response(const http_request &req)
   {
     http_build_gpio_get_response(req, res);
   }
-  else 
+  else
   {
     //Static files.
     res.data = "";
@@ -45,7 +45,7 @@ http_response http_create_post_response(const http_request &req)
   {
     http_build_gpio_post_response(req, res);
   }
-  else 
+  else
   {
     res.status = 501;
     res.status_msg = "Not Implemented";
@@ -60,10 +60,10 @@ http_response http_create_post_response(const http_request &req)
 http_response http_create_error_response(const http_request &req)
 {
   http_response res = {}; //Ensure the response is empty
-  res.http_version = req.http_version; 
+  res.http_version = req.http_version;
   res.data = "";
   res.date_time = string_get_datetime();
-  
+
   switch( req.error )
   {
     case EMPTY_REQUEST:

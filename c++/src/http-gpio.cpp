@@ -3,7 +3,7 @@
 #include "string_ops.h"
 #include <wiringPi.h>
 
-using namespace std;
+using std::string;
 
 void http_build_gpio_get_response(const http_request &req, http_response &res)
 {
@@ -29,7 +29,7 @@ void http_build_gpio_get_response(const http_request &req, http_response &res)
     res.data = "The requested pin is out of range [0-31].";
     return;
   }
-  
+
   //Set the pin mode to input for reading.
   pinMode(gpio_pin, INPUT);
 
@@ -76,7 +76,7 @@ void http_build_gpio_post_response(const http_request &req, http_response &res)
     res.status_msg = "Bad Request";
     res.data = "The requested pin status must either be 0 or 1.";
   }
-  
+
   //Set the pin mode to input for reading.
   pinMode(gpio_pin, OUTPUT);
 
@@ -85,6 +85,6 @@ void http_build_gpio_post_response(const http_request &req, http_response &res)
 
   res.status = 200;
   res.status_msg = "OK";
-  res.data = "Wrote " + to_string(gpio_state) + " to pin " + to_string(gpio_pin); 
+  res.data = "Wrote " + to_string(gpio_state) + " to pin " + to_string(gpio_pin);
 
 }

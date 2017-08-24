@@ -4,7 +4,9 @@
 #include <string>
 #include <vector>
 
-using namespace std;
+using std::string;
+using std::map;
+using std::vector;
 
 enum request_type
 {

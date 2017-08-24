@@ -7,7 +7,8 @@
 #include "http-parser.h"
 #include "string_ops.h"
 
-using namespace std;
+using std::string;
+using std::vector;
 
 http_request http_parse_request(const string &raw_request)
 {
@@ -27,50 +28,50 @@ http_request http_parse_request(const string &raw_request)
 
   //Process the request head args.
   http_process_header_fields(result, lines);
-   
+
   return result;
 
 }
 
-void http_process_head(http_request &r, const string &line)
+void http_process_head(http_request &req, const string &line)
 {
   vector<string> args = string_split_to_vector(line, ' ');
-  string http_version;
+  string http_version, http_request_type;
 
   if ( args.size() < 3 ) {
-    r.error = BAD_REQUEST;
+    req.error = BAD_REQUEST;
     return;
   }
 
-  r.type = http_parse_request_type(args);
-  if ( r.type == HTTP_UNKNOWN )
+  req.type = http_parse_request_type(args[0]);
+  if ( req.type == HTTP_UNKNOWN )
   {
-    r.error = UNKNOWN_REQUEST_TYPE;
+    req.error = UNKNOWN_REQUEST_TYPE;
     return;
   }
 
   //Save URI.
-  r.uri = args[1];
-  
+  req.uri = args[1];
+
   //Check HTTP version.
   http_version = string_to_upper(args[2]);
   if ( http_version == "HTTP/1.0" )
   {
-    r.http_version = 1.0;
+    req.http_version = 1.0;
   }
   else if ( http_version == "HTTP/1.1" )
   {
-    r.http_version = 1.1;
-  } 
-  else 
+    req.http_version = 1.1;
+  }
+  else
   {
-    r.error = INVALID_HTTP_VERSION;
+    req.error = INVALID_HTTP_VERSION;
     return;
   }
 
 }
 
-void http_process_header_fields(http_request &r, const vector<string> &lines)
+void http_process_header_fields(http_request &req, const vector<string> &lines)
 {
   vector<string> line_args;
   int i, max;
@@ -84,17 +85,18 @@ void http_process_header_fields(http_request &r, const vector<string> &lines)
   for ( i=1; i<max; i++ )
   {
     line_args = string_split_to_vector(lines[i], ':');
-    r.header_fields[string_to_lower(line_args[0])] = string_trim(line_args[1]);
+    if ( line_args.size() >= 2 )
+      req.header_fields[string_to_lower(line_args[0])] = string_trim(line_args[1]);
   }
 
 }
 
-request_type http_parse_request_type(const vector<string> &args)
+
+request_type http_parse_request_type(const string &method)
 {
   string http_method_arg;
-  request_type result;
 
-  http_method_arg = string_to_upper(args[0]);
+  http_method_arg = string_to_upper(method);
 
   if ( http_method_arg == "GET" )
   {

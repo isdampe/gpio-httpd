@@ -28,8 +28,8 @@ struct http_client
 };
 
 /**
- * Creates a http_srv instance, create a TCP port, sets its options, binds to it,
- * and attempts to listen on it. Set appropriate values in http_srv.
+ * Creates a http_srv instance, creates a TCP port, sets its options, binds to
+ * it, and attempts to listen on it. Sets appropriate values in http_srv.
  * @param  port             The TCP port number to listen on
  * @param  max_queue        The total number of connections allowed in the queue
  * @param  document_root_fp The document root directory path

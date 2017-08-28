@@ -1,11 +1,12 @@
 #include <string>
 #include "http-gpio.h"
+#include "http-fs.h"
 #include "http-response.h"
 #include "string_ops.h"
 
 using std::string;
 
-http_response http_create_get_response(const http_request &req)
+http_response http_create_get_response(const http_request &req, const string &document_root)
 {
   string gpios;
   http_response res = {};
@@ -22,9 +23,7 @@ http_response http_create_get_response(const http_request &req)
   else
   {
     //Static files.
-    res.data = "";
-    res.status = 200;
-    res.status_msg = "OK";
+    http_serve_static_files(req, res);
   }
 
   http_response_set_data_length(res);
@@ -32,7 +31,7 @@ http_response http_create_get_response(const http_request &req)
   return res;
 }
 
-http_response http_create_post_response(const http_request &req)
+http_response http_create_post_response(const http_request &req, const string &document_root)
 {
   string gpios;
   http_response res = {};
@@ -54,7 +53,7 @@ http_response http_create_post_response(const http_request &req)
     res.data = "POST is only supported for /gpio requests.";
     http_response_set_data_length(res);
   }
-  
+
   http_response_set_data_length(res);
 
   return res;

@@ -51,5 +51,5 @@ void server_loop(http_srv &server);
  * and detects the end of a HTTP request. Routes the requests appropriately.
  * @param client_fd The client socket descriptor identifier
  */
-void server_handle_request(const int client_fd);
+void server_handle_request(const http_srv &server, const int client_fd);
 void server_reply(const http_client &client, const http_response &response);

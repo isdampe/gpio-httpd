@@ -96,14 +96,14 @@ void server_loop(http_srv &server)
     if (client_fd < 0)
       printf("Error when accepting socket\n");
 
-    std::thread req(server_handle_request, client_fd);
+    std::thread req(server_handle_request, server, client_fd);
     req.detach();
 
   }
 
 }
 
-void server_handle_request(const int client_fd)
+void server_handle_request(const http_srv &server, const int client_fd)
 {
   http_client client;
   char buf[TCP_BUFFER_SIZE];
@@ -169,10 +169,10 @@ void server_handle_request(const int client_fd)
     switch(http_req.type)
     {
       case request_type::HTTP_GET:
-        http_res = http_create_get_response(http_req);
+        http_res = http_create_get_response(http_req, server.document_root);
         break;
       case request_type::HTTP_POST:
-        http_res = http_create_post_response(http_req);
+        http_res = http_create_post_response(http_req), server.document_root;
         break;
       default:
         http_res = http_create_error_response(http_req);

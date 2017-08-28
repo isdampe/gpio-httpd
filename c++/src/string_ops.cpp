@@ -64,3 +64,8 @@ string string_get_datetime()
 
   return ss.str();
 }
+
+string string_file_extension_to_mime_type(const string &file_extension)
+{
+  string mime_type = "text/raw";
+}

@@ -16,7 +16,7 @@ struct http_srv
 {
   int sock_fd;
   struct sockaddr_in addr;
-  string root_dir;
+  string document_root_dir;
 };
 
 struct http_client

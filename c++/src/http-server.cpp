@@ -15,7 +15,7 @@
 
 #include "http-parser.h"
 #include "http-response.h"
-#include "server.h"
+#include "http-server.h"
 #include "string_ops.h"
 
 #define TCP_BUFFER_SIZE 1024
@@ -77,7 +77,7 @@ http_srv server_create(const unsigned int port, const unsigned int max_queue, st
   }
 
   //Set the root directory
-  server.root_dir = document_root_fp;
+  server.document_root_dir = document_root_fp;
 
   return server;
 
@@ -169,10 +169,10 @@ void server_handle_request(const http_srv &server, const int client_fd)
     switch(http_req.type)
     {
       case request_type::HTTP_GET:
-        http_res = http_create_get_response(http_req, server.document_root);
+        http_res = http_create_get_response(http_req, server.document_root_dir);
         break;
       case request_type::HTTP_POST:
-        http_res = http_create_post_response(http_req), server.document_root;
+        http_res = http_create_post_response(http_req, server.document_root_dir);
         break;
       default:
         http_res = http_create_error_response(http_req);

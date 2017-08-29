@@ -18,7 +18,7 @@ void http_build_gpio_get_response(const http_request &req, http_response &res)
   map<string,string> json_data;
   wiringPiSetup();
 
-  res.content_type = "text/json;";
+  res.content_type = "application/json; charset=utf8";
 
   vector<string> uri_components = string_split_to_vector(req.uri, '/');
   if ( uri_components.size() != 2 )
@@ -77,7 +77,7 @@ void http_build_gpio_post_response(const http_request &req, http_response &res)
   map<string,string> json_data;
   wiringPiSetup();
 
-  res.content_type = "text/json;";
+  res.content_type = "application/json; charset=utf8";
 
   vector<string> uri_components = string_split_to_vector(req.uri, '/');
   if ( uri_components.size() != 3 )

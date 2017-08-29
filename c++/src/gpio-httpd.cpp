@@ -23,7 +23,7 @@ int main(int argc, char *argv[])
 
   unsigned int listen_port = 8080;
   unsigned int max_concurrent_connections = 10;
-  string document_root_fp = "/var/www/";
+  string document_root_fp = "/var/www";
 
   //Override the default port.
   if ( argc >= 2 )
@@ -43,6 +43,7 @@ int main(int argc, char *argv[])
   if ( argc >= 3 )
   {
     document_root_fp = argv[2];
+    //Ensure there is no trailing slash.
   }
 
   server = server_create(listen_port, max_concurrent_connections, document_root_fp);

@@ -12,7 +12,7 @@ http_response http_create_get_response(const http_request &req, const string &do
   http_response res = {};
   res.http_version = req.http_version;
   res.date_time = string_get_datetime();
-  res.content_type = "text/html;";
+  res.content_type = "text/html; charset=utf-8";
 
   //Is it a special request?
   gpios = req.uri.substr(0,5);
@@ -23,7 +23,7 @@ http_response http_create_get_response(const http_request &req, const string &do
   else
   {
     //Static files.
-    http_serve_static_files(req, res);
+    http_serve_static_files(req, res, document_root);
   }
 
   http_response_set_data_length(res);

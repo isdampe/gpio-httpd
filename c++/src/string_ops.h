@@ -42,7 +42,7 @@ string string_get_datetime();
 
 /**
  * Converts a file extension string to a mime type
- * @param  file_extension The file extension string, without the . (i.e. "jpg")
+ * @param  fe             The file extension string, without the . (i.e. "jpg")
  * @return                The file mime type for use by content-type
  */
-string string_file_extension_to_mime_type(const string &file_extension);
+string string_file_extension_to_mime_type(string fe);

@@ -41,6 +41,7 @@ struct http_response
   float http_version;
   map<string,string> header_fields;
   string content_type;
+  string serve_file;
   unsigned long data_length;
   string data;
 };

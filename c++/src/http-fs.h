@@ -21,3 +21,10 @@ void http_serve_static_files(const http_request &req, http_response &res, const 
  * @return      True if the file exists, otherwise false.
  */
 bool file_exists(const string &name);
+
+/**
+ * Calculates the file size in bytes of a given file
+ * @param  name The full file path string
+ * @return      The size of the file in bytes
+ */
+unsigned long filesize(const string &name);

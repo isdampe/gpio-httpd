@@ -52,4 +52,24 @@ void server_loop(http_srv &server);
  * @param client_fd The client socket descriptor identifier
  */
 void server_handle_request(const http_srv &server, const int client_fd);
+
+/**
+ * Generates HTTP response HEAD string
+ * @param response The http_response to parse and build
+ * @return         The HTTP head string
+ */
+string server_generate_head_string(const http_response &response);
+
+/**
+ * Uses a prebuilt http_response to reply to a client
+ * @param client   The http_client to reply to
+ * @param response The http_response to reply with
+ */
 void server_reply(const http_client &client, const http_response &response);
+
+/**
+ * Uses a prebuilt http_response to stream a file to a client
+ * @param client   The http_client to stream the data to
+ * @param response The http_response to reply with
+ */
+void server_stream_file(const http_client &client, http_response &response);

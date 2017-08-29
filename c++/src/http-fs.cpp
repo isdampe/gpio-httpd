@@ -30,17 +30,22 @@ void http_serve_static_files(const http_request &req, http_response &res, const 
     return;
   }
 
-  //Try to serve the file
+  //Set data length to file size.
+  res.data_length = filesize(r_fp);
 
-
-  //Determine mime_type with string_file_extension_to_mime_type
-  res.status = 200;
-  res.status_msg = "OK";
-  res.data = r_fp;
+  //Let http-server.cpp stream this file.
+  res.serve_file = r_fp;
 }
 
 bool file_exists(const string &name)
 {
   struct stat buffer;
   return (stat (name.c_str(), &buffer) == 0);
+}
+
+unsigned long filesize(const string &name)
+{
+    struct stat stat_buf;
+    int rc = stat(name.c_str(), &stat_buf);
+    return rc == 0 ? stat_buf.st_size : -1;
 }

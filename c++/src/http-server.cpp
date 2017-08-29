@@ -12,6 +12,7 @@
 #include <signal.h>
 #include <thread>
 #include <iostream>
+#include <fstream>
 
 #include "http-parser.h"
 #include "http-response.h"
@@ -19,11 +20,13 @@
 #include "string_ops.h"
 
 #define TCP_BUFFER_SIZE 1024
+#define IO_STREAM_BUFFER_SIZE 4096
 
 //2MB.
 #define HTTP_MAX_REQUEST_SIZE 2097152
 
 using std::string;
+using std::ifstream;
 
 const string SERVER_NAME = "gpiohttpd";
 const string SERVER_VERSION = "0.1.0";
@@ -181,14 +184,21 @@ void server_handle_request(const http_srv &server, const int client_fd)
 
   }
 
-  server_reply(client, http_res);
+  if ( http_res.serve_file == "" )
+  {
+    server_reply(client, http_res);
+  }
+  else
+  {
+    server_stream_file(client, http_res);
+  }
 
   //Should I close, i.e. keep open?
   close(client.client_fd);
 
 }
 
-void server_reply(const http_client &client, const http_response &response)
+string server_generate_head_string(const http_response &response)
 {
   string str_res;
 
@@ -210,14 +220,85 @@ void server_reply(const http_client &client, const http_response &response)
   //Data.
   if ( response.data_length > 0 )
   {
-    str_res += "Content-Length: " + to_string(response.data_length) + "\r\n\r\n";
-    str_res += response.data + "\r\n";
+    str_res += "Content-Length: " + to_string(response.data_length) + "\r\n";
+
+    //Only write data on non-file streams
+    if ( response.serve_file == "" )
+    {
+      str_res += "\r\n" + response.data;
+    }
+
   }
+
+  //End of head.
+  str_res += "\r\n";
+
+  return str_res;
+
+}
+
+void server_reply(const http_client &client, const http_response &response)
+{
+  string str_res;
+
+  str_res = server_generate_head_string(response);
 
   //Send it.
   write(client.client_fd, str_res.c_str(), strlen(str_res.c_str()));
   if (client.n <= 0)
     printf("ERROR writing to socket\n");
+
+  //If not keep open
+  //close(client.client_fd);
+
+}
+
+void server_stream_file(const http_client &client, http_response &response)
+{
+  long bytes_read = 0;
+  string str_res;
+
+  //Open file stream.
+  ifstream is (response.serve_file, ifstream::binary);
+
+  //If there is a problem opening the stream, fallback to error.
+  if (! is )
+  {
+    response.status = 403;
+    response.status_msg = "Forbidden";
+    response.data = "<h1>Unauthorized</h1><p>You are not authorized to access" \
+                    "this resource.</p>";
+    response.serve_file = "";
+    server_reply(client, response);
+    return;
+  }
+
+  response.status = 200;
+  response.status_msg = "OK";
+
+  //Generate reply-head
+  str_res = server_generate_head_string(response);
+
+  //Write the head.
+  write(client.client_fd, str_res.c_str(), strlen(str_res.c_str()));
+  if (client.n <= 0)
+    printf("ERROR writing to socket\n");
+
+  //Create a buffer.
+  char *buffer = new char[IO_STREAM_BUFFER_SIZE];
+
+  while ( bytes_read < response.data_length )
+  {
+    //Read into buffer.
+    is.read(buffer, IO_STREAM_BUFFER_SIZE);
+
+    //Write to client.
+    write(client.client_fd, buffer, strlen(buffer));
+    if ( client.n <= 0 )
+      printf("ERROR writing to socket\n");
+
+    bytes_read += IO_STREAM_BUFFER_SIZE;
+  }
 
   //If not keep open
   //close(client.client_fd);

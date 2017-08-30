@@ -195,6 +195,7 @@ void server_handle_request(const http_srv &server, const int client_fd)
   }
 
   //Should I close, i.e. keep open?
+  //If keep open, re-call this function?
   close(client.client_fd);
 
 }
@@ -248,9 +249,6 @@ void server_reply(const http_client &client, const http_response &response)
   write(client.client_fd, str_res.c_str(), strlen(str_res.c_str()));
   if (client.n <= 0)
     printf("ERROR writing to socket\n");
-
-  //If not keep open
-  //close(client.client_fd);
 
 }
 
@@ -316,8 +314,5 @@ void server_stream_file(const http_client &client, http_response &response)
     i++;
 
   }
-
-  //If not keep open
-  //close(client.client_fd);
 
 }

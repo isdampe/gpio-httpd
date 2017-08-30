@@ -23,8 +23,8 @@ void http_serve_static_files(const http_request &req, http_response &res, const 
 bool file_exists(const string &name);
 
 /**
- * Calculates the file size in bytes of a given file
- * @param  name The full file path string
- * @return      The size of the file in bytes
+ * Returns the filesize of a file in bytes
+ * @param  name The file path name string
+ * @return      The file size in bytes
  */
 unsigned long filesize(const string &name);

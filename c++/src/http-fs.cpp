@@ -35,6 +35,11 @@ void http_serve_static_files(const http_request &req, http_response &res, const 
 
   //Let http-server.cpp stream this file.
   res.serve_file = r_fp;
+
+  //Set default status
+  res.status = 200;
+  res.status_msg = "OK";
+
 }
 
 bool file_exists(const string &name)

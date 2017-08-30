@@ -10,6 +10,7 @@
 #include <arpa/inet.h>
 #include <sys/wait.h>
 #include <signal.h>
+#include <math.h>
 #include <thread>
 #include <iostream>
 #include <fstream>
@@ -20,7 +21,7 @@
 #include "string_ops.h"
 
 #define TCP_BUFFER_SIZE 1024
-#define IO_STREAM_BUFFER_SIZE 4096
+#define IO_STREAM_BUFFER_SIZE 262144
 
 //2MB.
 #define HTTP_MAX_REQUEST_SIZE 2097152
@@ -256,6 +257,7 @@ void server_reply(const http_client &client, const http_response &response)
 void server_stream_file(const http_client &client, http_response &response)
 {
   long bytes_read = 0;
+  int loop_buffer_byte_size, last_loop_index = 0, i = 0;
   string str_res;
 
   //Open file stream.
@@ -273,9 +275,6 @@ void server_stream_file(const http_client &client, http_response &response)
     return;
   }
 
-  response.status = 200;
-  response.status_msg = "OK";
-
   //Generate reply-head
   str_res = server_generate_head_string(response);
 
@@ -285,19 +284,37 @@ void server_stream_file(const http_client &client, http_response &response)
     printf("ERROR writing to socket\n");
 
   //Create a buffer.
-  char *buffer = new char[IO_STREAM_BUFFER_SIZE];
+  char buffer[IO_STREAM_BUFFER_SIZE];
+
+  //Set the default loop buffer byte size.
+  loop_buffer_byte_size = IO_STREAM_BUFFER_SIZE;
+
+  //Determine the last loop index.
+  //This is done pre-loop, as comparing a loop iteration counter against a
+  //pre-computed value is faster than computing and comparing large numbers
+  //continously.
+  if ( response.data_length > 0 && loop_buffer_byte_size > 0 )
+    last_loop_index = ceil(response.data_length / loop_buffer_byte_size);
 
   while ( bytes_read < response.data_length )
   {
+
+    //For the last iteration of the loop, only read the remaining number of bytes
+    //into the buffer, and only send the remaining number of bytes to the client.
+    if ( i == last_loop_index )
+      loop_buffer_byte_size = response.data_length - bytes_read;
+
     //Read into buffer.
-    is.read(buffer, IO_STREAM_BUFFER_SIZE);
+    is.read(buffer, loop_buffer_byte_size);
 
     //Write to client.
-    write(client.client_fd, buffer, strlen(buffer));
+    write(client.client_fd, buffer, loop_buffer_byte_size);
     if ( client.n <= 0 )
       printf("ERROR writing to socket\n");
 
-    bytes_read += IO_STREAM_BUFFER_SIZE;
+    bytes_read += loop_buffer_byte_size;
+    i++;
+
   }
 
   //If not keep open

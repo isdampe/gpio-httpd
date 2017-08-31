@@ -46,3 +46,40 @@ string string_get_datetime();
  * @return                The file mime type for use by content-type
  */
 string string_file_extension_to_mime_type(string fe);
+
+/**
+ * Converts a single char to hex
+ * Taken from https://github.com/cmakified/cgicc/find/master
+ * License: https://www.gnu.org/software/cgicc/index.html
+ * @param  c The single char to convert
+ * @return   The hex value
+ */
+string char_to_hex(char c);
+
+/**
+ * Converts a hex value to a char
+ * Taken from https://github.com/cmakified/cgicc/find/master
+ * License: https://www.gnu.org/software/cgicc/index.html
+ * @param  first  The hex value
+ * @param  second The second hex value (if any)
+ * @return        The char value
+ */
+char hex_to_char(char first, char second);
+
+/**
+ * Converts a string into a URI encoded schema
+ * Taken from https://github.com/cmakified/cgicc/find/master
+ * License: https://www.gnu.org/software/cgicc/index.html
+ * @param  src The string to encode
+ * @return     The URI encoded string
+ */
+string url_encode(const string &src);
+
+/**
+ * Decodes a URI encoded string
+ * Taken from https://github.com/cmakified/cgicc/find/master
+ * License: https://www.gnu.org/software/cgicc/index.html
+ * @param  src The URI encoded string
+ * @return     The decoded URI string
+ */
+string url_decode(const string &src);

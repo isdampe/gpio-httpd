@@ -51,7 +51,16 @@ void http_process_head(http_request &req, const string &line)
   }
 
   //Save URI.
-  req.uri = args[1];
+  req.uri = url_decode(args[1]);
+
+  //If there are get arguments, separate them.
+  size_t strpos = req.uri.find("?");
+  if ( strpos != string::npos )
+  {
+    vector<string> uri_split = string_split_to_vector(req.uri, '?');
+    req.uri = uri_split[0];
+    req.get_args = uri_split[1];
+  }
 
   //Check HTTP version.
   http_version = string_to_upper(args[2]);

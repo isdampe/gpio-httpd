@@ -29,6 +29,7 @@ struct http_request
   request_type type;
   request_error error;
   string uri;
+  string get_args;
   float http_version;
   map<string,string> header_fields;
 };

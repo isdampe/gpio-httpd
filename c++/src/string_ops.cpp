@@ -311,10 +311,6 @@ string string_file_extension_to_mime_type(string fe)
 
 }
 
-/**
- * Taken from https://github.com/cmakified/cgicc/find/master
- * License: https://www.gnu.org/software/cgicc/index.html
- */
 string char_to_hex(char c)
 {
   string result;

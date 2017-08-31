@@ -65,10 +65,22 @@ string string_get_datetime()
   return ss.str();
 }
 
+string string_get_file_extension(const string &file_name)
+{
+  string result = "";
+
+  size_t strpos = file_name.rfind(".");
+  if (strpos == string::npos)
+    return result;
+
+  return file_name.substr(strpos +1);
+
+}
+
 string string_file_extension_to_mime_type(string fe)
 {
   fe = string_to_lower(fe);
-  string mime_type = "text/raw";
+  string mime_type = "application/octet-stream";
 
   if ( fe == "aac" )
   {

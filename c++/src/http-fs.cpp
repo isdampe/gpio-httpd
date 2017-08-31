@@ -33,6 +33,11 @@ void http_serve_static_files(const http_request &req, http_response &res, const 
   //Set data length to file size.
   res.data_length = filesize(r_fp);
 
+  //Set the content-type.
+  res.content_type = string_file_extension_to_mime_type(
+    string_get_file_extension(r_fp)
+  );
+
   //Let http-server.cpp stream this file.
   res.serve_file = r_fp;
 

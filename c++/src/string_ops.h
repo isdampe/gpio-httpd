@@ -41,6 +41,13 @@ string string_trim(const string &s, const string &whitespace = " \t");
 string string_get_datetime();
 
 /**
+ * Returns the extension string of a filename string
+ * @param  file_name The filename, i.e. /abc.html
+ * @return           The string extension, i.e. html
+ */
+string string_get_file_extension(const string &file_name);
+
+/**
  * Converts a file extension string to a mime type
  * @param  fe             The file extension string, without the . (i.e. "jpg")
  * @return                The file mime type for use by content-type

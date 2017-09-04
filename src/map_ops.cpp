@@ -25,3 +25,11 @@ string map_to_json_string(map<string,string> key_val_map)
 
   return result;
 }
+
+bool map_key_exists(const map<string,string> &key_val_map, const string &key)
+{
+  if ( key_val_map.find(key) == key_val_map.end() )
+    return false;
+
+  return true;
+}

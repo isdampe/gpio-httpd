@@ -31,3 +31,10 @@ http_response http_create_error_response(const http_request &req);
  * @param res The http_request to set the data_length for
  */
 void http_response_set_data_length(http_response &res);
+
+/**
+ * Checks whether a given request wants to keep the connection alive
+ * @param  req The http_req to check
+ * @return     True if keep-alive requested, otherwise false
+ */
+bool http_should_keep_alive(const http_request &req);

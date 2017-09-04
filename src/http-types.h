@@ -32,6 +32,7 @@ struct http_response
   string status_msg;
   string date_time;
   float http_version;
+  bool keep_alive;
   map<string,string> header_fields;
   string content_type;
   string serve_file;

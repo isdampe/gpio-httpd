@@ -24,8 +24,8 @@
 #define TCP_BUFFER_SIZE 1024
 #define IO_STREAM_BUFFER_SIZE 262144
 
-//2MB.
-#define HTTP_MAX_REQUEST_SIZE 2097152
+#define HTTP_MAX_REQUEST_SIZE 2097152 //2MB.
+#define HTTP_CONNECTION_TIMEOUT 15 //15 seconds.
 
 using std::string;
 using std::ifstream;
@@ -83,6 +83,8 @@ http_srv server_create(const unsigned int port, const unsigned int max_queue, st
 
   //Set the root directory
   server.document_root_dir = document_root_fp;
+
+  cout << "Listening on port " << port << ", serving " << document_root_fp << "\n";
 
   return server;
 
@@ -197,7 +199,11 @@ void server_handle_request(const http_srv &server, const int client_fd)
 
   //Should I close, i.e. keep open?
   //If keep open, re-call this function?
-  close(client.client_fd);
+  //close(client.client_fd);
+  if ( http_res.keep_alive )
+    server_handle_request(server, client_fd);
+  else
+    close(client.client_fd);
 
 }
 
@@ -215,10 +221,14 @@ string server_generate_head_string(const http_response &response)
   //Server.
   str_res += "Server: " + SERVER_SIGNATURE + "\r\n";
 
-  //Various other headers.
-
   //Content type.
   str_res += "Content-Type: " + response.content_type + "\r\n";
+
+  //Keep alive?
+  if ( response.keep_alive == true )
+    str_res += "Connection: keep-alive\r\n";
+  else
+    str_res += "Connection: close\r\n";
 
   //Data.
   if ( response.data_length > 0 )

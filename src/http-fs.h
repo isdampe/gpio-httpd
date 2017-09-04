@@ -16,13 +16,6 @@ using std::fstream;
 void http_serve_static_files(const http_request &req, http_response &res, const string &document_root);
 
 /**
- * Checks to see whether a specified file exists or not.
- * @param  name The string containing the full file path name
- * @return      True if the file exists, otherwise false.
- */
-bool file_exists(const string &name);
-
-/**
  * Returns the filesize of a file in bytes
  * @param  name The file path name string
  * @return      The file size in bytes

@@ -11,24 +11,24 @@ using std::vector;
 
 http_request http_parse_request(const string &raw_request)
 {
-  http_request result = {}; //Ensure the struct is empty
+  http_request req = {}; //Ensure the struct is empty
 
   vector<string> lines = string_split_to_vector(raw_request, '\n');
 
   //Empty request.
   if ( lines.size() < 1 )
   {
-    result.error = EMPTY_REQUEST;
-    return result;
+    req.error = http_status::BAD_REQUEST;
+    return req;
   }
 
   //Process the head (i.e. first line)
-  http_process_head(result, lines[0]);
+  http_process_head(req, lines[0]);
 
   //Process the request head args.
-  http_process_header_fields(result, lines);
+  http_process_header_fields(req, lines);
 
-  return result;
+  return req;
 
 }
 
@@ -38,14 +38,14 @@ void http_process_head(http_request &req, const string &line)
   string http_version, http_request_type;
 
   if ( args.size() < 3 ) {
-    req.error = BAD_REQUEST;
+    req.error = http_status::BAD_REQUEST;
     return;
   }
 
   req.type = http_parse_request_type(args[0]);
   if ( req.type == HTTP_UNKNOWN )
   {
-    req.error = UNKNOWN_REQUEST_TYPE;
+    req.error = http_status::NOT_IMPLEMENTED;
     return;
   }
 
@@ -73,7 +73,7 @@ void http_process_head(http_request &req, const string &line)
   }
   else
   {
-    req.error = INVALID_HTTP_VERSION;
+    req.error = http_status::HTTP_VERSION_NOT_SUPPORTED;
     return;
   }
 

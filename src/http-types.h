@@ -3,6 +3,7 @@
 #include <map>
 #include <string>
 #include <vector>
+#include "http-status.h"
 
 using std::string;
 using std::map;
@@ -15,19 +16,10 @@ enum request_type
   HTTP_POST
 };
 
-enum request_error
-{
-  NO_ERROR,
-  EMPTY_REQUEST,
-  BAD_REQUEST,
-  UNKNOWN_REQUEST_TYPE,
-  INVALID_HTTP_VERSION
-};
-
 struct http_request
 {
   request_type type;
-  request_error error;
+  http_status error;
   string uri;
   string get_args;
   float http_version;
@@ -36,7 +28,7 @@ struct http_request
 
 struct http_response
 {
-  unsigned short status;
+  http_status status;
   string status_msg;
   string date_time;
   float http_version;

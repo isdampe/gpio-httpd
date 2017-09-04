@@ -1,4 +1,5 @@
 #include <string>
+#include "http-status.h"
 #include "http-gpio.h"
 #include "http-fs.h"
 #include "http-response.h"
@@ -26,6 +27,7 @@ http_response http_create_get_response(const http_request &req, const string &do
     http_serve_static_files(req, res, document_root);
   }
 
+  res.status_msg = http_get_status_string(res.status);
   http_response_set_data_length(res);
 
   return res;
@@ -48,12 +50,12 @@ http_response http_create_post_response(const http_request &req, const string &d
   }
   else
   {
-    res.status = 501;
-    res.status_msg = "Not Implemented";
+    res.status = http_status::NOT_IMPLEMENTED;
     res.data = "POST is only supported for /gpio requests.";
     http_response_set_data_length(res);
   }
 
+  res.status_msg = http_get_status_string(res.status);
   http_response_set_data_length(res);
 
   return res;
@@ -67,30 +69,8 @@ http_response http_create_error_response(const http_request &req)
   res.date_time = string_get_datetime();
   res.content_type = "text/html;";
   res.data = "";
-
-  switch( req.error )
-  {
-    case EMPTY_REQUEST:
-      res.status = 400;
-      res.status_msg = "Bad Request";
-      break;
-    case BAD_REQUEST:
-      res.status = 400;
-      res.status_msg = "Bad Request";
-      break;
-    case INVALID_HTTP_VERSION:
-      res.status = 505;
-      res.status_msg = "HTTP Version Not Supported";
-      break;
-    case UNKNOWN_REQUEST_TYPE:
-      res.status = 501;
-      res.status_msg = "Not Implemented";
-      break;
-    default:
-      res.status = 500;
-      res.status_msg = "Internal Server Error";
-      break;
-  }
+  res.status = req.error;
+  res.status_msg = http_get_status_string(res.status);
 
   return res;
 }

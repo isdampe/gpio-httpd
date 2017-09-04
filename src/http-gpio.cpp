@@ -1,6 +1,8 @@
 #include <map>
 #include <string>
 #include <vector>
+
+#include "http-status.h"
 #include "http-types.h"
 #include "http-gpio.h"
 #include "string_ops.h"
@@ -57,7 +59,7 @@ void http_build_gpio_get_response(const http_request &req, http_response &res)
 
   if ( gpio_queries.size() < 1 )
   {
-    res.status = 400;
+    res.status = http_status::BAD_REQUEST;
     json_data["message"] = "No pins were selected for query.";
     res.data = map_to_json_string(json_data);
     return;
@@ -65,8 +67,7 @@ void http_build_gpio_get_response(const http_request &req, http_response &res)
 
   json_data = http_gpio_query_pins_to_map(gpio_queries);
 
-  res.status = 200;
-  res.status_msg = "OK";
+  res.status = http_status::OK;
   res.data = map_to_json_string(json_data);
 
 }
@@ -82,8 +83,7 @@ void http_build_gpio_post_response(const http_request &req, http_response &res)
   vector<string> uri_components = string_split_to_vector(req.uri, '/');
   if ( uri_components.size() != 3 )
   {
-    res.status = 400;
-    res.status_msg = "Bad Request";
+    res.status = http_status::BAD_REQUEST;
     json_data["message"] = "Missing pin or pin status.";
     res.data = map_to_json_string(json_data);
     return;
@@ -99,8 +99,7 @@ void http_build_gpio_post_response(const http_request &req, http_response &res)
   //Check to see if the pin number is valid as a digital pin.
   if ( gpio_pin < 0 || gpio_pin > 31 )
   {
-    res.status = 400;
-    res.status_msg = "Bad Request";
+    res.status = http_status::BAD_REQUEST;
     json_data["message"] = "The requested pin is out of range [0-31].";
     res.data = map_to_json_string(json_data);
     return;
@@ -115,8 +114,7 @@ void http_build_gpio_post_response(const http_request &req, http_response &res)
 
   if ( gpio_state < 0 || gpio_state > 1 )
   {
-    res.status = 400;
-    res.status_msg = "Bad Request";
+    res.status = http_status::BAD_REQUEST;
     json_data["message"] = "The requested pin status must either be 0 or 1.";
     res.data = map_to_json_string(json_data);
     return;
@@ -130,8 +128,7 @@ void http_build_gpio_post_response(const http_request &req, http_response &res)
 
   json_data[to_string(gpio_pin)] = to_string(gpio_state);
 
-  res.status = 200;
-  res.status_msg = "OK";
+  res.status = http_status::OK;
   res.data = map_to_json_string(json_data);
 
 }

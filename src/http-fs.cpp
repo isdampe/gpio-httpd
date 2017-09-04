@@ -4,6 +4,7 @@
 #include <sys/stat.h>
 #include <unistd.h>
 
+#include "http-status.h"
 #include "http-types.h"
 #include "http-fs.h"
 #include "string_ops.h"
@@ -23,8 +24,7 @@ void http_serve_static_files(const http_request &req, http_response &res, const 
   //Does requested file path ../../ its way out of document_root?
   if (! file_exists(r_fp) )
   {
-    res.status = 404;
-    res.status_msg = "Not Found";
+    res.status = http_status::NOT_FOUND;
     res.data = "<h1>File Not Found</h1>\n<p>Your request for " + req.uri + " " \
                 "could not be found.</p>";
     return;
@@ -42,8 +42,7 @@ void http_serve_static_files(const http_request &req, http_response &res, const 
   res.serve_file = r_fp;
 
   //Set default status
-  res.status = 200;
-  res.status_msg = "OK";
+  res.status = http_status::OK;
 
 }
 

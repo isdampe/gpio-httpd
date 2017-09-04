@@ -15,6 +15,7 @@
 #include <iostream>
 #include <fstream>
 
+#include "http-status.h"
 #include "http-parser.h"
 #include "http-response.h"
 #include "http-server.h"
@@ -264,8 +265,7 @@ void server_stream_file(const http_client &client, http_response &response)
   //If there is a problem opening the stream, fallback to error.
   if (! is )
   {
-    response.status = 403;
-    response.status_msg = "Forbidden";
+    response.status = http_status::FORBIDDEN;
     response.data = "<h1>Unauthorized</h1><p>You are not authorized to access" \
                     "this resource.</p>";
     response.serve_file = "";

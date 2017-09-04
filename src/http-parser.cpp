@@ -95,7 +95,7 @@ void http_process_header_fields(http_request &req, const vector<string> &lines)
   {
     line_args = string_split_to_vector(lines[i], ':');
     if ( line_args.size() >= 2 )
-      req.header_fields[string_to_lower(line_args[0])] = string_trim(line_args[1]);
+      req.header_fields[line_args[0]] = string_trim(line_args[1]);
   }
 
 }

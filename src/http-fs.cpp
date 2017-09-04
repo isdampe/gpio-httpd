@@ -15,14 +15,24 @@ using std::fstream;
 
 void http_serve_static_files(const http_request &req, http_response &res, const string &document_root)
 {
+  struct stat stat_buffer;
   string r_fp;
   ifstream file_data;
 
   //Build requested file path.
-  r_fp = document_root + ( req.uri == "/" ? "/index.html" : req.uri );
+  r_fp = document_root + req.uri;
 
-  //Does requested file path ../../ its way out of document_root?
-  if (! file_exists(r_fp) )
+  //Confirm the file / directory exists.
+  if ( stat(r_fp.c_str(), &stat_buffer) == 0 )
+  {
+    //If it's a directory
+    if (stat_buffer.st_mode & S_IFDIR)
+    {
+      r_fp = r_fp + "/index.html";
+    }
+
+  }
+  else
   {
     res.status = http_status::NOT_FOUND;
     res.data = "<h1>File Not Found</h1>\n<p>Your request for " + req.uri + " " \
@@ -44,12 +54,6 @@ void http_serve_static_files(const http_request &req, http_response &res, const 
   //Set default status
   res.status = http_status::OK;
 
-}
-
-bool file_exists(const string &name)
-{
-  struct stat buffer;
-  return (stat (name.c_str(), &buffer) == 0);
 }
 
 unsigned long filesize(const string &name)

@@ -55,6 +55,14 @@ http_srv server_create(const unsigned int port, const unsigned int max_queue, st
     exit(1);
   }
 
+  //Set timeout.
+  struct timeval tv;
+  tv.tv_sec = HTTP_CONNECTION_TIMEOUT;
+  tv.tv_usec = 0;
+  setsockopt(server.sock_fd, SOL_SOCKET, SO_RCVTIMEO, (const char *)&tv,
+             sizeof(struct timeval) );
+
+
   bzero((char *) &server.addr, sizeof(server.addr));
   server.addr.sin_family = AF_INET;
 

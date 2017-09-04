@@ -12,6 +12,15 @@ using namespace std;
 vector<string> string_split_to_vector(const string &s, char delim);
 
 /**
+ * Replaces all occurences of a substring with a string
+ * @param  haystack The string subject to search in
+ * @param  needle   The substring to search for
+ * @param  replace  The string to replace matches with
+ * @return          The modified string
+ */
+string string_replace_all(const string &haystack, const string &needle, const string &replace);
+
+/**
  * Converts a string to lowercase
  * @param  s The subject string
  * @return   The string converted to lowercase

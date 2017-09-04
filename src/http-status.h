@@ -30,6 +30,11 @@ enum http_status
   HTTP_VERSION_NOT_SUPPORTED = 505
 };
 
+/**
+ * Returns the related HTTP status string from a http_status
+ * @param  status The http_status code
+ * @return        The status string
+ */
 string http_get_status_string(const http_status &status);
 
 #endif

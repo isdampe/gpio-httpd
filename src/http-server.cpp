@@ -266,9 +266,11 @@ void server_stream_file(const http_client &client, http_response &response)
   if (! is )
   {
     response.status = http_status::FORBIDDEN;
+    response.content_type = "text/html;";
     response.data = "<h1>Unauthorized</h1><p>You are not authorized to access" \
-                    "this resource.</p>";
+                    " this resource.</p>";
     response.serve_file = "";
+    http_response_set_data_length(response);
     server_reply(client, response);
     return;
   }

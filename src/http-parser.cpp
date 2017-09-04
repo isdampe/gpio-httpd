@@ -61,6 +61,9 @@ void http_process_head(http_request &req, const string &line)
     req.get_args = uri_split[1];
   }
 
+  //Prevent directory traversal
+  req.uri = string_replace_all(req.uri, "../", "");
+
   //Check HTTP version.
   http_version = string_to_upper(args[2]);
   if ( http_version == "HTTP/1.0" )

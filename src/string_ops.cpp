@@ -27,6 +27,19 @@ vector<string> string_split_to_vector(const string &s, char delim) {
   return tokens;
 }
 
+string string_replace_all(const string &haystack, const string &needle, const string &replace)
+{
+  string subject = haystack;
+  string::size_type n = 0;
+  while ( ( n = subject.find( needle, n ) ) != string::npos )
+  {
+      subject.replace( n, needle.size(), replace );
+      n += replace.size();
+  }
+
+  return subject;
+}
+
 string string_to_lower(const string &s)
 {
   string result = s;

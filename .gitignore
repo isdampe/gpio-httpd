@@ -1,4 +1,3 @@
-c++/bin/*
-old-c/bin/*
+bin/*
 *.swp
 *.swo

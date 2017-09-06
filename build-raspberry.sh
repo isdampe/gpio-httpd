@@ -18,4 +18,6 @@ fi
 echo "Running the compiler..."
 g++-5 src/*.cpp -std=c++11 -lpthread -lwiringPi -lcrypt -lrt -g -o bin/gpio-httpd
 
-echo "Ready."
+echo "Compilation complete."
+echo "Run with ./bin/gpio-httpd [port] [document_root_fp]"
+echo "Example: ./bin/gpio-httpd 9001 $PWD/www"

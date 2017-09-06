@@ -1,3 +1,4 @@
+#include <iostream>
 #include <string>
 #include "http-server.h"
 
@@ -8,7 +9,7 @@ using namespace std;
  */
 void gpio_httpd_usage()
 {
-  puts("Usage: gpiod [port_number] [document_root]");
+  cerr << "Usage: gpiod [port_number] [document_root]" << endl;
 }
 
 /**

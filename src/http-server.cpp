@@ -29,6 +29,7 @@
 
 using std::string;
 using std::ifstream;
+using std::iostream;
 
 const string SERVER_NAME = "gpiohttpd";
 const string SERVER_VERSION = "0.1.0";
@@ -42,7 +43,7 @@ http_srv server_create(const unsigned int port, const unsigned int max_queue, st
   server.sock_fd = socket(AF_INET, SOCK_STREAM, 0);
   if (server.sock_fd < 0)
   {
-    printf("Fatal: Could not create socket.\n");
+    cerr << "Fatal: Error trying to create socket." << endl;
     exit(1);
   }
 
@@ -51,7 +52,7 @@ http_srv server_create(const unsigned int port, const unsigned int max_queue, st
   if ( setsockopt(server.sock_fd, SOL_SOCKET, SO_REUSEADDR, (const void *)&optval,
                   sizeof(int)) == -1 )
   {
-    printf("Fatal: Could not setsockopt.\n");
+    cerr << "Fatal: Error trying to set socket to SO_REUSEADDR" << endl;
     exit(1);
   }
 
@@ -60,7 +61,7 @@ http_srv server_create(const unsigned int port, const unsigned int max_queue, st
   tv.tv_sec = HTTP_CONNECTION_TIMEOUT;
   tv.tv_usec = 0;
   setsockopt(server.sock_fd, SOL_SOCKET, SO_RCVTIMEO, (const char *)&tv,
-             sizeof(struct timeval) );
+             sizeof(struct timeval));
 
 
   bzero((char *) &server.addr, sizeof(server.addr));
@@ -76,7 +77,7 @@ http_srv server_create(const unsigned int port, const unsigned int max_queue, st
   if (::bind(server.sock_fd, (struct sockaddr *) &server.addr,
 	   sizeof(server.addr)) < 0)
   {
-    printf("Fatal: could not bind to socket on port %i.\n", port);
+    cerr << "Fatal: Error trying to bind to socket on port " << port << endl;
     close(server.sock_fd);
     exit(1);
   }
@@ -84,7 +85,8 @@ http_srv server_create(const unsigned int port, const unsigned int max_queue, st
   //Mark the socket as ready to listen.
   if (listen(server.sock_fd, max_queue) < 0)
   {
-    printf("Fatal: could not open socket for listening on port %i.\n", port);
+    cerr << "Fatal: Error trying to open socket for listening on port " \
+         << port << endl;
     close(server.sock_fd);
     exit(1);
   }
@@ -92,7 +94,8 @@ http_srv server_create(const unsigned int port, const unsigned int max_queue, st
   //Set the root directory
   server.document_root_dir = document_root_fp;
 
-  cout << "Listening on port " << port << ", serving " << document_root_fp << "\n";
+  clog << "Listening opened on port " << port << ", serving static files from " \
+       << document_root_fp << endl;
 
   return server;
 
@@ -109,7 +112,8 @@ void server_loop(http_srv &server)
     //Wait for a connection.
     client_fd = accept(server.sock_fd, (struct sockaddr *) &client_addr, &client_len);
     if (client_fd < 0)
-      printf("Error when accepting socket\n");
+      continue;
+      cout << "Error when accepting socket" << endl;
 
     std::thread req(server_handle_request, server, client_fd);
     req.detach();
@@ -139,7 +143,7 @@ void server_handle_request(const http_srv &server, const int client_fd)
     client.n = read(client.client_fd, buf, TCP_BUFFER_SIZE);
     if (client.n <= 0)
     {
-      //printf("ERROR reading from socket\n");
+      cout << "ERROR reading from socket" << endl;
       client.error = CLIENT_UNKNOWN_ERROR;
       break;
     }
@@ -267,7 +271,7 @@ void server_reply(const http_client &client, const http_response &response)
   //Send it.
   write(client.client_fd, str_res.c_str(), strlen(str_res.c_str()));
   if (client.n <= 0)
-    printf("ERROR writing to socket\n");
+    cout << "ERROR writing to socket" << endl;
 
 }
 
@@ -299,7 +303,7 @@ void server_stream_file(const http_client &client, http_response &response)
   //Write the head.
   write(client.client_fd, str_res.c_str(), strlen(str_res.c_str()));
   if (client.n <= 0)
-    printf("ERROR writing to socket\n");
+    cout << "ERROR writing to socket" << endl;
 
   //Create a buffer.
   char buffer[IO_STREAM_BUFFER_SIZE];
@@ -328,7 +332,7 @@ void server_stream_file(const http_client &client, http_response &response)
     //Write to client.
     write(client.client_fd, buffer, loop_buffer_byte_size);
     if ( client.n <= 0 )
-      printf("ERROR writing to socket\n");
+      cout << "ERROR writing to socket" << endl;
 
     bytes_read += loop_buffer_byte_size;
     i++;

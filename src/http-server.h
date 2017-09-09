@@ -1,9 +1,6 @@
-#ifndef HTTP_SERVER_
-#define HTTP_SERVER_
 #include <string>
 #include <arpa/inet.h>
 #include "http-types.h"
-#include "http-cache.h"
 
 using std::string;
 
@@ -20,7 +17,6 @@ struct http_srv
   int sock_fd;
   struct sockaddr_in addr;
   string document_root_dir;
-  http_dynamic_cache cache;
 };
 
 struct http_client
@@ -77,5 +73,3 @@ void server_reply(const http_client &client, const http_response &response);
  * @param response The http_response to reply with
  */
 void server_stream_file(const http_client &client, http_response &response);
-
-#endif

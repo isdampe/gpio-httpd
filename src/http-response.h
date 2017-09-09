@@ -1,6 +1,5 @@
 #include <string>
 #include "http-types.h"
-#include "http-server.h"
 
 /**
  * Parses a http_request, takes appropriate action, and generates an
@@ -8,7 +7,7 @@
  * @param  req The http_request to parse
  * @return     The built http_response
  */
-http_response http_create_get_response(const http_request &req, const http_srv &server);
+http_response http_create_get_response(const http_request &req, const string &document_root);
 
 /**
  * Parses a http_request, takes appropriate action, and generates an
@@ -16,7 +15,7 @@ http_response http_create_get_response(const http_request &req, const http_srv &
  * @param  req The http_request to parse
  * @return     The built http_response
  */
-http_response http_create_post_response(const http_request &req, const http_srv &server);
+http_response http_create_post_response(const http_request &req, const string &document_root);
 
 /**
  * Parses a http_request, takes appropriate action, and generates an
@@ -24,7 +23,7 @@ http_response http_create_post_response(const http_request &req, const http_srv 
  * @param  req The http_request to parse
  * @return     The built http_response
  */
-http_response http_create_error_response(const http_request &req, const http_srv &server);
+http_response http_create_error_response(const http_request &req);
 
 /**
  * Parses a http_response and sets the correct data_length value dependant

@@ -1,7 +1,6 @@
 #include <string>
 
 #include "http-status.h"
-#include "http-server.h"
 #include "http-gpio.h"
 #include "http-fs.h"
 #include "http-response.h"
@@ -10,7 +9,7 @@
 
 using std::string;
 
-http_response http_create_get_response(const http_request &req, const http_srv &server)
+http_response http_create_get_response(const http_request &req, const string &document_root)
 {
   string gpios;
   http_response res = {};
@@ -27,7 +26,7 @@ http_response http_create_get_response(const http_request &req, const http_srv &
   else
   {
     //Static files.
-    http_serve_static_files(req, res, server.document_root_dir);
+    http_serve_static_files(req, res, document_root);
   }
 
   res.keep_alive = http_should_keep_alive(req);
@@ -37,7 +36,7 @@ http_response http_create_get_response(const http_request &req, const http_srv &
   return res;
 }
 
-http_response http_create_post_response(const http_request &req, const http_srv &server)
+http_response http_create_post_response(const http_request &req, const string &document_root)
 {
   string gpios;
   http_response res = {};
@@ -67,7 +66,7 @@ http_response http_create_post_response(const http_request &req, const http_srv 
 
 }
 
-http_response http_create_error_response(const http_request &req, const http_srv &server)
+http_response http_create_error_response(const http_request &req)
 {
   http_response res = {}; //Ensure the response is empty
   res.http_version = req.http_version;

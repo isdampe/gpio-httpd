@@ -11,7 +11,7 @@ body {
   background: #fff;
   margin: 0;
   font-family: Helvetica, Roboto, sans-serif;
-  font-size: 15px;
+  font-size: 16px;
   color: #333;
 }
 
@@ -28,17 +28,22 @@ textarea {
 
   .title {
     width: 120px;
+    height: 40px;
+    line-height: 40px;
+    text-transform: uppercase;
+    color: #aaa;
   }
   .switch {
     position: absolute;
     right: 1em;
+    top: 1.25em;
   }
 }
 
 .slider {
   overflow: hidden;
-  width: 32px;
-  height: 16px;
+  width: 64px;
+  height: 32px;
   cursor: pointer;
   background: $primary;
   display: block;
@@ -56,17 +61,21 @@ textarea {
     display: none;
 
     &:checked + .handle {
-      left: 16px;
+      left: 32px;
     }
 
     &:checked + .handle:before {
       background: $secondary;
     }
   }
+  input[type="checkbox"]:focus{
+    outline:0;
+    -webkit-tap-highlight-color: rgba(255, 255, 255, 0);
+  }
 
   .handle {
-    width: 16px;
-    height: 16px;
+    width: 32px;
+    height: 32px;
     border-radius: 50%;
     background: lighten($primary,20%);
     display: block;

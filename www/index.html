@@ -3,11 +3,49 @@
 <head>
   <title>gpio-httpd</title>
   <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
+
+  <div id="switches">
+  </div>
+
+  <textarea id="template">
+    <div class="row">
+      <div class="title">GPIO Pin {i}</div>
+      <div class="switch">
+        <label class="slider">
+          <input type="checkbox" class="check" id="gpio-toggle-{i}" />
+          <span class="handle"></span>
+        </label>
+      </div>
+    </div>
+  </textarea>
+
   <script src="js/dist/gpio.js"></script>
   <script>
-    var gpio = new gpioApi(window.location.hostname, window.location.port);
+    (function(window){
+      var HIGH = 0, LOW = 1;
+      var gpio = new gpioApi(window.location.hostname, window.location.port);
+      var container = document.getElementById("switches");
+      var template = document.getElementById("template").value;
+
+      for ( var i=1; i<=31; i++ ) {
+        var buffer = template.replace(/\{i\}/g, i);
+        container.innerHTML = container.innerHTML + buffer;
+      }
+
+      for ( var i=1; i<=31; i++ ) {
+        (function(i){
+          var el = document.getElementById('gpio-toggle-' + i);
+          el.addEventListener('click', function(e) {
+            var val = ( this.checked ? HIGH : LOW );
+            gpio.digitalWrite(i, val);
+          })
+        })(i);
+      }
+    })(window);
   </script>
 </body>
 </html>

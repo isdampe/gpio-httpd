@@ -57,7 +57,8 @@ module.exports = {
     };
 
     req.open('POST', uri, true);
+    req.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
     req.send();
   }
-  
+
 };

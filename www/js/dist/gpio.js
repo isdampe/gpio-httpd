@@ -1,3 +1,4 @@
+(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 const ajax = require('./lib/gpioAjax.js');
 
 class gpioApi {
@@ -100,3 +101,70 @@ class gpioApi {
 }
 
 window.gpioApi = gpioApi;
+
+},{"./lib/gpioAjax.js":2}],2:[function(require,module,exports){
+/**
+ * Handles an AJAX response and decodes JSON data accordingly.
+ * @param  {XMLHttpRequest}   req       The http request instance.
+ * @param  {functoin}         callback  The callback function handler.
+ * @return {void}
+ */
+var handleRequest = function(req, callback) {
+  var json_res, error = 0;
+  if (req.readyState !== XMLHttpRequest.DONE) return;
+
+  if (req.status !== 200)
+    error = req.status;
+
+  try {
+    json_res = JSON.parse(req.responseText);
+  } catch(e) {
+    json_res = {};
+  }
+
+  if ( typeof callback === "function" )
+    callback(error, json_res);
+};
+
+module.exports = {
+
+  /**
+   * Performs an ajax HTTP GET request on a given uri.
+   * @param  {string}   uri      The URI to perform the request on.
+   * @param  {function} callback The callback function handler
+   * @return {void}
+   */
+  get: (uri, callback) => {
+    var req = new XMLHttpRequest();
+    var _this = this;
+
+    req.onreadystatechange = function() {
+      handleRequest(req, callback);
+    };
+
+    req.open('GET', uri, true);
+    req.send();
+  },
+
+  /**
+   * Performs an ajax HTTP POST request on a given uri.
+   * @param  {string}   uri      The URI to perform the request on.
+   * @param  {object}   data     The object of data to send with the request.
+   * @param  {function} callback The callback function handler
+   * @return {void}
+   */
+  post: (uri, data, callback) => {
+    var req = new XMLHttpRequest();
+    var _this = this;
+
+    req.onreadystatechange = function() {
+      handleRequest(req, callback);
+    };
+
+    req.open('POST', uri, true);
+    req.send();
+  }
+  
+};
+
+},{}]},{},[1]);

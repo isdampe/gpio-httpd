@@ -19,6 +19,7 @@
 #include "http-parser.h"
 #include "http-response.h"
 #include "http-server.h"
+#include "http-cache.h"
 #include "string_ops.h"
 
 #define TCP_BUFFER_SIZE 1024
@@ -93,6 +94,9 @@ http_srv server_create(const unsigned int port, const unsigned int max_queue, st
 
   //Set the root directory
   server.document_root_dir = document_root_fp;
+
+  //Create the cache.
+  server.cache = http_create_dynamic_cache();
 
   clog << "Listening opened on port " << port << ", serving static files from " \
        << document_root_fp << endl;
@@ -180,7 +184,7 @@ void server_handle_request(const http_srv &server, const int client_fd)
   if ( (int)http_req.error > 0 )
   {
     //Handle error respone.
-    http_res = http_create_error_response(http_req);
+    http_res = http_create_error_response(http_req, server);
   }
   else {
 
@@ -188,13 +192,13 @@ void server_handle_request(const http_srv &server, const int client_fd)
     switch(http_req.type)
     {
       case request_type::HTTP_GET:
-        http_res = http_create_get_response(http_req, server.document_root_dir);
+        http_res = http_create_get_response(http_req, server);
         break;
       case request_type::HTTP_POST:
-        http_res = http_create_post_response(http_req, server.document_root_dir);
+        http_res = http_create_post_response(http_req, server);
         break;
       default:
-        http_res = http_create_error_response(http_req);
+        http_res = http_create_error_response(http_req, server);
         break;
     }
 

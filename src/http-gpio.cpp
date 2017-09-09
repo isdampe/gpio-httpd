@@ -9,8 +9,7 @@
 #include "map_ops.h"
 #include <wiringPi.h>
 
-using std::string;
-using std::map;
+using namespace std;
 
 void http_build_gpio_get_response(const http_request &req, http_response &res)
 {
@@ -133,7 +132,6 @@ void http_build_gpio_post_response(const http_request &req, http_response &res)
 
 }
 
-
 map<string,string> http_gpio_query_pins_to_map(const vector<unsigned short> &gpio_queries)
 {
   map<string,string> results;
@@ -148,11 +146,7 @@ map<string,string> http_gpio_query_pins_to_map(const vector<unsigned short> &gpi
     if ( gpio_queries[i] < 1 || gpio_queries[i] > 31 )
       continue;
 
-    //Set the pin mode to input for reading.
-    pinMode(gpio_queries[i], INPUT);
-
-    //Read the value of the pin.
-    gpio_state = digitalRead(gpio_queries[i]);
+    gpio_state = http_gpio_read_state(i);
 
     //Store the results in the map
     results[to_string(gpio_queries[i])] = to_string(gpio_state);
@@ -161,4 +155,9 @@ map<string,string> http_gpio_query_pins_to_map(const vector<unsigned short> &gpi
 
   return results;
 
+}
+
+int http_gpio_read_state(int pin)
+{
+  return 0;
 }

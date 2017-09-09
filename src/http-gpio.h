@@ -2,8 +2,7 @@
 #include <vector>
 #include "http-types.h"
 
-using std::map;
-using std::vector;
+using namespace std;
 
 /**
  * Queries a vector of GPIO pins and returns their results in a key-value
@@ -27,3 +26,5 @@ void http_build_gpio_get_response(const http_request &req, http_response &res);
  * @param res The http_response to store the built response in
  */
 void http_build_gpio_post_response(const http_request &req, http_response &res);
+
+int http_gpio_read_state(int pin);

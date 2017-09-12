@@ -112,8 +112,11 @@ void server_loop(http_srv &server)
     //Wait for a connection.
     client_fd = accept(server.sock_fd, (struct sockaddr *) &client_addr, &client_len);
     if (client_fd < 0)
-      continue;
+    {
       cout << "Error when accepting socket" << endl;
+      continue;
+    }
+
 
     std::thread req(server_handle_request, server, client_fd);
     req.detach();

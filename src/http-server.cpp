@@ -204,17 +204,11 @@ void server_handle_request(const http_srv &server, const int client_fd)
   }
 
   if ( http_res.serve_file == "" )
-  {
     server_reply(client, http_res);
-  }
   else
-  {
     server_stream_file(client, http_res);
-  }
 
-  //Should I close, i.e. keep open?
-  //If keep open, re-call this function?
-  //close(client.client_fd);
+  //Take appropriate action based on parsed response.
   if ( http_res.keep_alive )
     server_handle_request(server, client_fd);
   else

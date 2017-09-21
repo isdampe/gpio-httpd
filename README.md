@@ -81,3 +81,7 @@ POST /gpio/5/1 HTTP/1.1
 Response:
 {"5": "1"}
 ```
+
+### Third party libraries
+
+* [WiringPi](http://wiringpi.com/) - [GNU LGPLv3 license](https://www.gnu.org/copyleft/lesser.html)

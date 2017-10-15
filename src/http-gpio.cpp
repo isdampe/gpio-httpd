@@ -182,7 +182,7 @@ map<string,string> http_gpio_query_pins_to_map(const vector<unsigned short> &gpi
       continue;
 
     //Read the value of the pin.
-    gpio_state = gpio_persist[gpio_queries[i]];
+    gpio_state = gpio_persist[gpio_queries[i] -1];
 
     //Store the results in the map
     results[to_string(gpio_queries[i])] = to_string(gpio_state);

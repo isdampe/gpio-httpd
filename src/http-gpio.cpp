@@ -181,9 +181,6 @@ map<string,string> http_gpio_query_pins_to_map(const vector<unsigned short> &gpi
     if ( gpio_queries[i] < 1 || gpio_queries[i] > GPIO_NUM_PINS )
       continue;
 
-    //Set the pin mode to input for reading.
-    pinMode(gpio_queries[i], INPUT);
-
     //Read the value of the pin.
     gpio_state = gpio_persist[gpio_queries[i]];
 

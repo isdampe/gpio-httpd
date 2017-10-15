@@ -21,6 +21,7 @@
 #include "http-server.h"
 #include "string_ops.h"
 
+#define GPIO_NUM_PINS 31
 #define TCP_BUFFER_SIZE 1024
 #define IO_STREAM_BUFFER_SIZE 262144
 
@@ -93,6 +94,9 @@ http_srv server_create(const unsigned int port, const unsigned int max_queue, st
 
   //Set the root directory
   server.document_root_dir = document_root_fp;
+
+  //Create the persistant store for the gpio status.
+  server.gpio_persist = (int *)calloc(GPIO_NUM_PINS, sizeof(int));
 
   clog << "Listening opened on port " << port << ", serving static files from " \
        << document_root_fp << endl;
@@ -191,10 +195,10 @@ void server_handle_request(const http_srv &server, const int client_fd)
     switch(http_req.type)
     {
       case request_type::HTTP_GET:
-        http_res = http_create_get_response(http_req, server.document_root_dir);
+        http_res = http_create_get_response(http_req, server.document_root_dir, server.gpio_persist);
         break;
       case request_type::HTTP_POST:
-        http_res = http_create_post_response(http_req, server.document_root_dir);
+        http_res = http_create_post_response(http_req, server.document_root_dir, server.gpio_persist);
         break;
       default:
         http_res = http_create_error_response(http_req);
@@ -336,4 +340,10 @@ void server_stream_file(const http_client &client, http_response &response)
 
   }
 
+}
+
+void server_destroy(http_srv &server)
+{
+  close(server.sock_fd);
+  free(server.gpio_persist);
 }

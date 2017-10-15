@@ -17,6 +17,7 @@ struct http_srv
   int sock_fd;
   struct sockaddr_in addr;
   string document_root_dir;
+  int *gpio_persist;
 };
 
 struct http_client
@@ -73,3 +74,9 @@ void server_reply(const http_client &client, const http_response &response);
  * @param response The http_response to reply with
  */
 void server_stream_file(const http_client &client, http_response &response);
+
+/**
+ * Destroys a http_srv instance
+ * @param server    The http_srv instance to destroy
+ */
+void server_destroy(http_srv &server);

@@ -9,7 +9,7 @@
 
 using std::string;
 
-http_response http_create_get_response(const http_request &req, const string &document_root)
+http_response http_create_get_response(const http_request &req, const string &document_root, int *gpio_persist)
 {
   string gpios;
   http_response res = {};
@@ -21,7 +21,7 @@ http_response http_create_get_response(const http_request &req, const string &do
   gpios = req.uri.substr(0,5);
   if ( gpios == "/gpio" )
   {
-    http_build_gpio_get_response(req, res);
+    http_build_gpio_get_response(req, res, gpio_persist);
   }
   else
   {
@@ -36,7 +36,7 @@ http_response http_create_get_response(const http_request &req, const string &do
   return res;
 }
 
-http_response http_create_post_response(const http_request &req, const string &document_root)
+http_response http_create_post_response(const http_request &req, const string &document_root, int *gpio_persist)
 {
   string gpios;
   http_response res = {};
@@ -49,7 +49,7 @@ http_response http_create_post_response(const http_request &req, const string &d
   gpios = req.uri.substr(0,5);
   if ( gpios == "/gpio" )
   {
-    http_build_gpio_post_response(req, res);
+    http_build_gpio_post_response(req, res, gpio_persist);
   }
   else
   {

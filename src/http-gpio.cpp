@@ -12,7 +12,7 @@
 using std::string;
 using std::map;
 
-void http_build_gpio_get_response(const http_request &req, http_response &res)
+void http_build_gpio_get_response(const http_request &req, http_response &res, int *gpio_persist)
 {
   vector<unsigned short> gpio_queries;
   vector<string> requested_pins;
@@ -72,7 +72,7 @@ void http_build_gpio_get_response(const http_request &req, http_response &res)
 
 }
 
-void http_build_gpio_post_response(const http_request &req, http_response &res)
+void http_build_gpio_post_response(const http_request &req, http_response &res, int *gpio_persist)
 {
   int gpio_pin, gpio_state;
   map<string,string> json_data;
@@ -125,6 +125,9 @@ void http_build_gpio_post_response(const http_request &req, http_response &res)
 
   //Write to the pin.
   digitalWrite(gpio_pin, gpio_state);
+
+  //Persist the state into storage.
+  gpio_persist[gpio_pin -1] = gpio_state;
 
   json_data[to_string(gpio_pin)] = to_string(gpio_state);
 

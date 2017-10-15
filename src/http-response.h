@@ -7,7 +7,7 @@
  * @param  req The http_request to parse
  * @return     The built http_response
  */
-http_response http_create_get_response(const http_request &req, const string &document_root);
+http_response http_create_get_response(const http_request &req, const string &document_root, int *gpio_persist);
 
 /**
  * Parses a http_request, takes appropriate action, and generates an
@@ -15,7 +15,7 @@ http_response http_create_get_response(const http_request &req, const string &do
  * @param  req The http_request to parse
  * @return     The built http_response
  */
-http_response http_create_post_response(const http_request &req, const string &document_root);
+http_response http_create_post_response(const http_request &req, const string &document_root, int *gpio_persist);
 
 /**
  * Parses a http_request, takes appropriate action, and generates an

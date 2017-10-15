@@ -49,6 +49,7 @@ int main(int argc, char *argv[])
 
   server = server_create(listen_port, max_concurrent_connections, document_root_fp);
   server_loop(server);
+  server_destroy(server);
 
   return 0;
 }

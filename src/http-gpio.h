@@ -18,7 +18,7 @@ map<string,string> http_gpio_query_pins_to_map(const vector<unsigned short> &gpi
  * @param req The http_request to parse
  * @param res The http_response to store the built response in
  */
-void http_build_gpio_get_response(const http_request &req, http_response &res);
+void http_build_gpio_get_response(const http_request &req, http_response &res, int *gpio_persist);
 
 /**
  * Parses a HTTP POST request, interacts with GPIO as per the request, builds
@@ -26,4 +26,4 @@ void http_build_gpio_get_response(const http_request &req, http_response &res);
  * @param req The http_request to parse
  * @param res The http_response to store the built response in
  */
-void http_build_gpio_post_response(const http_request &req, http_response &res);
+void http_build_gpio_post_response(const http_request &req, http_response &res, int *gpio_persist);

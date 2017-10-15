@@ -144,9 +144,9 @@ void server_handle_request(const http_srv &server, const int client_fd)
   while (1)
   {
     client.n = read(client.client_fd, buf, TCP_BUFFER_SIZE);
-    if (client.n <= 0)
+    if (client.n < 0)
     {
-      cout << "ERROR reading from socket" << endl;
+      cout << "ERROR reading from socket: " << endl;
       client.error = CLIENT_UNKNOWN_ERROR;
       break;
     }
@@ -267,8 +267,8 @@ void server_reply(const http_client &client, const http_response &response)
 
   //Send it.
   write(client.client_fd, str_res.c_str(), strlen(str_res.c_str()));
-  if (client.n <= 0)
-    cout << "ERROR writing to socket" << endl;
+  if (client.n < 0)
+    cout << "ERROR writing to socket: " << endl;
 
 }
 

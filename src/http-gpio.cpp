@@ -12,6 +12,8 @@
 using std::string;
 using std::map;
 
+#define GPIO_NUM_PINS 31
+
 void http_build_gpio_get_response(const http_request &req, http_response &res, int *gpio_persist)
 {
   vector<unsigned short> gpio_queries;
@@ -26,7 +28,7 @@ void http_build_gpio_get_response(const http_request &req, http_response &res, i
   if ( uri_components.size() != 2 )
   {
     //All pins.
-    for ( int i=1; i<=31; i++ )
+    for ( int i=1; i<=GPIO_NUM_PINS; i++ )
     {
       gpio_queries.push_back(i);
     }
@@ -47,7 +49,7 @@ void http_build_gpio_get_response(const http_request &req, http_response &res, i
         }
 
         //Skip pins out of domain
-        if ( gpio_pin < 0 || gpio_pin > 31 )
+        if ( gpio_pin < 0 || gpio_pin > GPIO_NUM_PINS )
           continue;
 
         gpio_queries.push_back(gpio_pin);
@@ -97,7 +99,7 @@ void http_build_gpio_post_response(const http_request &req, http_response &res, 
   }
 
   //Check to see if the pin number is valid as a digital pin.
-  if ( gpio_pin < 0 || gpio_pin > 31 )
+  if ( gpio_pin < 0 || gpio_pin > GPIO_NUM_PINS )
   {
     res.status = http_status::BAD_REQUEST;
     json_data["message"] = "The requested pin is out of range [0-31].";
@@ -148,7 +150,7 @@ map<string,string> http_gpio_query_pins_to_map(const vector<unsigned short> &gpi
     gpio_state = -1;
 
     //Only query raspberry pi pins.
-    if ( gpio_queries[i] < 1 || gpio_queries[i] > 31 )
+    if ( gpio_queries[i] < 1 || gpio_queries[i] > GPIO_NUM_PINS )
       continue;
 
     //Set the pin mode to input for reading.

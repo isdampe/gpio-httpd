@@ -67,7 +67,7 @@ void http_build_gpio_get_response(const http_request &req, http_response &res, i
     return;
   }
 
-  json_data = http_gpio_query_pins_to_map(gpio_queries);
+  json_data = http_gpio_query_pins_to_map(gpio_queries, gpio_persist);
 
   res.status = http_status::OK;
   res.data = map_to_json_string(json_data);
@@ -138,7 +138,6 @@ void http_build_gpio_post_response(const http_request &req, http_response &res, 
 
 }
 
-
 map<string,string> http_gpio_query_pins_to_map(const vector<unsigned short> &gpio_queries)
 {
   map<string,string> results;
@@ -158,6 +157,35 @@ map<string,string> http_gpio_query_pins_to_map(const vector<unsigned short> &gpi
 
     //Read the value of the pin.
     gpio_state = digitalRead(gpio_queries[i]);
+
+    //Store the results in the map
+    results[to_string(gpio_queries[i])] = to_string(gpio_state);
+
+  }
+
+  return results;
+
+}
+
+map<string,string> http_gpio_query_pins_to_map(const vector<unsigned short> &gpio_queries, int *gpio_persist)
+{
+  map<string,string> results;
+  int gpio_state;
+
+  for ( int i=0; i<gpio_queries.size(); i++ )
+  {
+    //Reset
+    gpio_state = -1;
+
+    //Only query raspberry pi pins.
+    if ( gpio_queries[i] < 1 || gpio_queries[i] > GPIO_NUM_PINS )
+      continue;
+
+    //Set the pin mode to input for reading.
+    pinMode(gpio_queries[i], INPUT);
+
+    //Read the value of the pin.
+    gpio_state = gpio_persist[gpio_queries[i]];
 
     //Store the results in the map
     results[to_string(gpio_queries[i])] = to_string(gpio_state);
